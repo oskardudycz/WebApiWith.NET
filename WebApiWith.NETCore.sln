@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{2E75462D-F3B5-497C-B0FC-57D1BF6DBEE9}"
+ProjectSection(SolutionItems) = preProject
+	LICENSE = LICENSE
+	README.md = README.md
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Logging", "Logging", "{793EDB47-8DD4-4197-AD62-0C81C7B462D9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ElasticStack", "ElasticStack", "{E238815A-B9D6-4470-82AE-0FC5E94C439D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serilog", "Serilog", "{5D354A12-4E9D-4A7C-92A8-69AD82EA0EA7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Default", "Default", "{D6E98D21-E88C-4C14-AD81-CC4723CFF6CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E238815A-B9D6-4470-82AE-0FC5E94C439D} = {793EDB47-8DD4-4197-AD62-0C81C7B462D9}
+		{5D354A12-4E9D-4A7C-92A8-69AD82EA0EA7} = {793EDB47-8DD4-4197-AD62-0C81C7B462D9}
+		{D6E98D21-E88C-4C14-AD81-CC4723CFF6CA} = {793EDB47-8DD4-4197-AD62-0C81C7B462D9}
+	EndGlobalSection
+EndGlobal
