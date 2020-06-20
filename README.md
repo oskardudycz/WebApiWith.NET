@@ -17,16 +17,17 @@ Samples and resources of how to design WebApi with .NET Core
 
 ## API Testing
 
-## Request params
-
-### CorrelationId
-
-**Links:**
-- [Steve Gordon - ASP.NET Core Correlation IDs](https://www.stevejgordon.co.uk/asp-net-core-correlation-ids)
-
 ## Filters
 
 ## Middleware
+
+## CorrelationId
+
+**Links:**
+- [Steve Gordon - ASP.NET Core Correlation IDs](https://www.stevejgordon.co.uk/asp-net-core-correlation-ids)
+- [Steve Gordon - CorrelationId NuGet Package](https://github.com/stevejgordon/CorrelationId)
+- [Vicenç García - Capturing and forwarding correlation IDs in ASP.NET Core](https://vgaltes.com/post/forwarding-correlation-ids-in-aspnetcore/)
+- [Vicenç García - Capturing and forwarding correlation IDs in ASP.NET Core, the easy way](https://vgaltes.com/post/forwarding-correlation-ids-in-aspnetcore-version-2/)
 
 ## GraphQL
 
