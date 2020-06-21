@@ -18,6 +18,17 @@ namespace Logging.Default
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
+                
+                // Configure logging 
+                .ConfigureLogging(logging =>
+                {
+                    // clear configuration to make sure that only desired providers are logged
+                    logging.ClearProviders();
+                    // add console logger
+                    logging.AddConsole(options => options.IncludeScopes = true);
+                    // add debug logger
+                    logging.AddDebug();
+                });
     }
 }

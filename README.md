@@ -57,7 +57,7 @@ public class ReservationsController: Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTentative([FromBody] CreateReservationRequest request)
+    public async Task<IActionResult> Create([FromBody] CreateReservationRequest request)
     {
         var reservationId = Guid.NewGuid();
 
@@ -147,7 +147,7 @@ The first potential use case is to always add entity type and identifier to all 
 
 ```csharp
 [HttpPut]
-public async Task<IActionResult> CreateTentative(Guid id, [FromBody] UpdateReservationRequest request)
+public async Task<IActionResult> Create(Guid id, [FromBody] UpdateReservationRequest request)
 {
     using(logger.BeginScope("For {EntityType}", "Reservation")
     {
@@ -201,7 +201,7 @@ public class CorrelationIdMiddleware
 - [Andre Newman - Tools and Techniques for Logging Microservices ](https://dzone.com/articles/tools-and-techniques-for-logging-microservices-1)
 - [Siva Prasad Rao Janapati - Distributed Logging Architecture for Microservices](https://dzone.com/articles/distributed-logging-architecture-for-microservices)
 - [Szymon Warda - Stop trying to mock the ILogger methods](https://indexoutofrange.com/Stop-trying-to-mock-the-ILogger-methods/)
-- [Andrew Lock - How to include scopes when logging exceptions in ASP.NET Core ](https://andrewlock.net/how-to-include-scopes-when-logging-exceptions-in-asp-net-core/)
+- [Andrew Lock - How to include scopes when logging exceptions in ASP.NET Core](https://andrewlock.net/how-to-include-scopes-when-logging-exceptions-in-asp-net-core/)
 - [Rico Suter - Logging with ILogger in .NET: Recommendations and best practices](https://blog.rsuter.com/logging-with-ilogger-recommendations-and-best-practices/)
 
 ### Serilog
