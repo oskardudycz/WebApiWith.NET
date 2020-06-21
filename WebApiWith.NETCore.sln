@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serilog", "Serilog", "{5D35
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Default", "Default", "{D6E98D21-E88C-4C14-AD81-CC4723CFF6CA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging.Default", "Logging\Default\Logging.Default\Logging.Default.csproj", "{E275B514-9DE4-4A6C-9CBF-49E13021D46C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,5 +25,12 @@ Global
 		{E238815A-B9D6-4470-82AE-0FC5E94C439D} = {793EDB47-8DD4-4197-AD62-0C81C7B462D9}
 		{5D354A12-4E9D-4A7C-92A8-69AD82EA0EA7} = {793EDB47-8DD4-4197-AD62-0C81C7B462D9}
 		{D6E98D21-E88C-4C14-AD81-CC4723CFF6CA} = {793EDB47-8DD4-4197-AD62-0C81C7B462D9}
+		{E275B514-9DE4-4A6C-9CBF-49E13021D46C} = {D6E98D21-E88C-4C14-AD81-CC4723CFF6CA}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E275B514-9DE4-4A6C-9CBF-49E13021D46C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E275B514-9DE4-4A6C-9CBF-49E13021D46C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E275B514-9DE4-4A6C-9CBF-49E13021D46C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E275B514-9DE4-4A6C-9CBF-49E13021D46C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
