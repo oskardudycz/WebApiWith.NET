@@ -35,10 +35,10 @@ Samples and resources of how to design WebApi with .NET Core
 
 ### General
 
-**Log Levels**
+**Log Levels:**
 
 By default in .NET Core there are six levels of logging (available through [LogLevel](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.loglevel?view=dotnet-plat-ext-3.1) enum):
-- `Trace` (value `0`) - the most detailed and verbosed information about the application flow, 
+- `Trace` (value `0`) - the most detailed and verbose information about the application flow, 
 - `Debug` (`1`) - useful information during the development process (eg. local environment bug investigation),
 - `Information` (`2`) - usually important information about the application flow that can be useful for diagnostics and flow, 
 - `Warning` (`3`) - potential unexpected application event or error that's not blocking flow (eg. operation was successfully saved to database but notification failed) or transient error occurred but was succeeded after retry), 
@@ -50,7 +50,7 @@ It's important to keep in mind that `Trace` and `Debug` should not be used on pr
 Because of theirs characteristic they may contain sensitive application information to be effective (eg. system secrets, PII/GDPR Data). Because of that we need to be sure that on production environment they are disabled as that may end up with security leak. 
 As they're also verbose, then keeping them on production system may increase significantly cost of logs storage. Plus too much logs make them unreadable and hard to read.
 
-**Log Categories**
+**Log Categories:**
 
 Each logger instance needs to have assigned category. Categories allows to group logs messages (as category will be added to each log entry).
 By convention category should be passed as type parameter of [ILogger<T>](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.ilogger-1?view=dotnet-plat-ext-3.1). Usually it's the class that we're injecting logger, eg.
@@ -100,8 +100,42 @@ public class ReservationsController: Controller
 }
 ```
 
-That is useful for searching through logs and issue diagnostics. 
-As mentioned in previous section - it's also possible to  
+Categories are useful for searching through logs and diagnose issues. 
+As mentioned in previous section - it's also possible to define in different log levels for configuration.
+
+Eg. if you have a default log level `Information` and you need to investigate issues ocurring in specific controller (eg. `ReservationsController`) then you can change the log level to `Debug` for dedicated category.
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "LoggingSamples.Controllers.ReservationController": "Debug"
+    }
+  }
+}
+```
+
+Then for all categories but `LoggingSamples.Controllers.ReservationController` you'll have logs logged for Information and above (`Information`, `Warning`, `Error`, `Critical`) and for `LoggingSamples.Controllers.ReservationController` also `Debug`.
+
+The other example is to disable logs from selected category - eg. 
+- because you noticed that is logging some sensitive information and you need quickly to change that, 
+- you want to mute some unimportant system logs,
+- you want to make sure that logs from specific category (eg. `AuthenticationData`) won't be ever logged on prod.
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "AuthenticationData": "None"
+    }
+  }
+}
+```
+
+**Log Scopes:**
+
 
 
 **Links:**
