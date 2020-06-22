@@ -249,6 +249,7 @@ public IActionResult Update([FromBody] UpdateReservation request)
 
 **Links:**
 - [Serilog Documentation](https://serilog.net/)
+- [Nicholas Blumhardt - Setting up Serilog in ASP.NET Core 3](https://nblumhardt.com/2019/10/serilog-in-aspnetcore-3/)
 - [Ben Foster - Serilog Best Practices](https://benfoster.io/blog/serilog-best-practices/)
 - [Alfus Jaganathan - Scoped logging using Microsoft Logger with Serilog in .Net Core Application](https://www.initpals.com/net-core/scoped-logging-using-microsoft-logger-with-serilog-in-net-core-application/)
 

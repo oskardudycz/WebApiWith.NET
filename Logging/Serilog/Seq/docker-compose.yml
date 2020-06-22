@@ -1,0 +1,10 @@
+version: "3"
+services:
+  seq:
+    image: datalust/seq
+    container_name: seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5342:80" # UI
+      - "5341:5341" # Data ingest
