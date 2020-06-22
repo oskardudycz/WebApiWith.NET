@@ -23,6 +23,13 @@ ProjectSection(SolutionItems) = preProject
 	Logging\Serilog\Seq\docker-compose.yml = Logging\Serilog\Seq\docker-compose.yml
 EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ElasticSearch", "ElasticSearch", "{7FDC5B2D-68B8-485F-BFD7-529293175564}"
+ProjectSection(SolutionItems) = preProject
+	Logging\ElasticStack\ElasticSearch\docker-compose.yml = Logging\ElasticStack\ElasticSearch\docker-compose.yml
+EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging.ElasticStack", "Logging\ElasticStack\Logging.ElasticStack\Logging.ElasticStack.csproj", "{49E83DF3-60D3-40E2-9CCD-2A6DC2325B87}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +42,8 @@ Global
 		{E275B514-9DE4-4A6C-9CBF-49E13021D46C} = {D6E98D21-E88C-4C14-AD81-CC4723CFF6CA}
 		{6A959BCE-454C-44DC-9B3B-7AD732BD3357} = {5D354A12-4E9D-4A7C-92A8-69AD82EA0EA7}
 		{A0477711-2250-4D05-BC8C-4B8D3D87856D} = {5D354A12-4E9D-4A7C-92A8-69AD82EA0EA7}
+		{7FDC5B2D-68B8-485F-BFD7-529293175564} = {E238815A-B9D6-4470-82AE-0FC5E94C439D}
+		{49E83DF3-60D3-40E2-9CCD-2A6DC2325B87} = {E238815A-B9D6-4470-82AE-0FC5E94C439D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E275B514-9DE4-4A6C-9CBF-49E13021D46C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -45,5 +54,9 @@ Global
 		{6A959BCE-454C-44DC-9B3B-7AD732BD3357}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A959BCE-454C-44DC-9B3B-7AD732BD3357}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A959BCE-454C-44DC-9B3B-7AD732BD3357}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49E83DF3-60D3-40E2-9CCD-2A6DC2325B87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49E83DF3-60D3-40E2-9CCD-2A6DC2325B87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49E83DF3-60D3-40E2-9CCD-2A6DC2325B87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49E83DF3-60D3-40E2-9CCD-2A6DC2325B87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -25,7 +25,7 @@ Samples and resources of how to design WebApi with .NET Core
 
 ### General
 
-**Log Levels:**
+#### Log Levels
 
 By default in .NET Core there are six levels of logging (available through [LogLevel](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.loglevel?view=dotnet-plat-ext-3.1) enum):
 - `Trace` (value `0`) - the most detailed and verbose information about the application flow, 
@@ -40,7 +40,7 @@ It's important to keep in mind that `Trace` and `Debug` should not be used on pr
 Because of theirs characteristic they may contain sensitive application information to be effective (eg. system secrets, PII/GDPR Data). Because of that we need to be sure that on production environment they are disabled as that may end up with security leak. 
 As they're also verbose, then keeping them on production system may increase significantly cost of logs storage. Plus too much logs make them unreadable and hard to read.
 
-**Log Categories:**
+#### Log Categories
 
 Each logger instance needs to have assigned category. Categories allows to group logs messages (as category will be added to each log entry).
 By convention category should be passed as type parameter of [ILogger<T>](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.ilogger-1?view=dotnet-plat-ext-3.1). Usually it's the class that we're injecting logger, eg.
@@ -124,7 +124,7 @@ The other example is to disable logs from selected category - eg.
 }
 ```
 
-**Log Scopes:**
+#### Log Scopes
 
 Besides categories it's possible to define logging scopes. They allow have add set of custom information to each log entry.
 
@@ -192,7 +192,7 @@ public class CorrelationIdMiddleware
 }
 ```
 
-**Log Events:**
+#### Log Events
 
 The other option for grouping logs are log events. They are used normally to group them eg. by purpose - eg. updating an entity, starting controller action, not finding entity etc.
 To define them you need to provide a standardized list of int event ids. Eg.
@@ -233,7 +233,7 @@ public IActionResult Update([FromBody] UpdateReservation request)
 }
 ```
 
-**Links:**
+#### Links
 - [Microsoft Docs - Logging in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1)
 - [Microsoft Docs - High-performance logging with LoggerMessage in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/loggermessage?view=aspnetcore-3.1)
 - [Steve Gordon - High-Performance Logging in .NET Core](https://www.stevejgordon.co.uk/high-performance-logging-in-net-core)
@@ -244,10 +244,12 @@ public IActionResult Update([FromBody] UpdateReservation request)
 - [Szymon Warda - Stop trying to mock the ILogger methods](https://indexoutofrange.com/Stop-trying-to-mock-the-ILogger-methods/)
 - [Andrew Lock - How to include scopes when logging exceptions in ASP.NET Core](https://andrewlock.net/how-to-include-scopes-when-logging-exceptions-in-asp-net-core/)
 - [Rico Suter - Logging with ILogger in .NET: Recommendations and best practices](https://blog.rsuter.com/logging-with-ilogger-recommendations-and-best-practices/)
+- [Stephen Cleary - Microsoft.Extensions.Logging](https://blog.stephencleary.com/2018/06/microsoft-extensions-logging-part-2-types.html)
+- [Stephen Cleary - A New Pattern for Exception Logging](https://blog.stephencleary.com/2020/06/a-new-pattern-for-exception-logging.html)
 
 ### Serilog
 
-**Links:**
+#### Links
 - [Serilog Documentation](https://serilog.net/)
 - [Nicholas Blumhardt - Setting up Serilog in ASP.NET Core 3](https://nblumhardt.com/2019/10/serilog-in-aspnetcore-3/)
 - [Ben Foster - Serilog Best Practices](https://benfoster.io/blog/serilog-best-practices/)
@@ -255,13 +257,13 @@ public IActionResult Update([FromBody] UpdateReservation request)
 
 ### NLog
 
-**Links:**
+#### Links
 - [NLog Documentation](https://nlog-project.org/)
 - [NLog Wiki - How to use structured logging](https://github.com/NLog/NLog/wiki/How-to-use-structured-logging)
 
 ### Elastic Stack - Kibana, LogStash etc.
 
-**Links:**
+#### Links
 - [HumanKode - Logging with ElasticSearch, Kibana, ASP.NET Core and Docker](https://www.humankode.com/asp-net-core/logging-with-elasticsearch-kibana-asp-net-core-and-docker)
 - [Than Le - Building logging system in Microservice Architecture with ELK stack and Serilog .NET Core](https://medium.com/@letienthanh0212/building-logging-system-in-microservice-architecture-with-elk-stack-and-serilog-net-core-part-1-8fe2dfcf9e6f)
 - [Marco de Sanctis - Monitor ASP.NET Core in ELK through Docker and Azure Event Hubs](https://medium.com/@marcodesanctis2/monitor-asp-net-core-in-elk-through-docker-and-azure-event-hubs-6e519249af61)
@@ -269,11 +271,12 @@ public IActionResult Update([FromBody] UpdateReservation request)
 - [Ali Mselmi - Structured logging with Serilog and Seq and ElasticSearch under Docker ](https://dev.to/hasdrubal/structure-logging-with-serilog-and-seq-and-elasticsearch-under-docker-16dk)
 - [Logz.io - Complete Guide to ELK Stack](https://logz.io/learn/complete-guide-elk-stack/#elasticsearch)
 - [Logz.io - Best practices for managing ElasticSearch indices](https://logz.io/blog/managing-elasticsearch-indices/)
-- [Andrew Lock - Writing logs to Elasticsearch with Fluentd using Serilog in ASP.NET Core](Writing logs to Elasticsearch with Fluentd using Serilog in ASP.NET Core)
+- [Andrew Lock - Writing logs to Elasticsearch with Fluentd using Serilog in ASP.NET Core](https://andrewlock.net/writing-logs-to-elasticsearch-with-fluentd-using-serilog-in-asp-net-core/)
+- [Elastic Documentation - Install ElasticSearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
 
 ## CorrelationId
 
-**Links:**
+#### Links
 - [Steve Gordon - ASP.NET Core Correlation IDs](https://www.stevejgordon.co.uk/asp-net-core-correlation-ids)
 - [Steve Gordon - CorrelationId NuGet Package](https://github.com/stevejgordon/CorrelationId)
 - [Vicenç García - Capturing and forwarding correlation IDs in ASP.NET Core](https://vgaltes.com/post/forwarding-correlation-ids-in-aspnetcore/)
