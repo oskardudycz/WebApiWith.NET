@@ -192,6 +192,47 @@ public class CorrelationIdMiddleware
 }
 ```
 
+**Log Events:**
+
+The other option for grouping logs are log events. They are used normally to group them eg. by purpose - eg. updating an entity, starting controller action, not finding entity etc.
+To define them you need to provide a standardized list of int event ids. Eg.
+
+```csharp
+public class LogEvents
+{
+    public const int InvalidRequest = 911;
+    public const int ConflictState = 112;
+    public const int EntityNotFound = 1000;
+}
+```
+
+Sample usage:
+
+```csharp
+[HttpPut]
+public IActionResult Update([FromBody] UpdateReservation request)
+{
+    logger.LogInformation("Initiating reservation creation for {seatId}", request?.SeatId);
+
+    if (request?.SeatId == null || request?.SeatId == Guid.Empty)
+    {
+        logger.LogWarning(LogEvents.InvalidRequest, "Invalid {SeatId}", request?.SeatId);
+
+        return BadRequest("Invalid SeatId");
+    }
+
+    if (request?.ReservationId == null || request?.ReservationId == Guid.Empty)
+    {
+        logger.LogWarning(LogEvents.InvalidRequest, "Invalid {ReservationId}", request?.ReservationId);
+
+        return BadRequest("Invalid ReservationId");
+    }
+
+    // (...)
+    return Created("api/Reservations", reservation.Id);
+}
+```
+
 **Links:**
 - [Microsoft Docs - Logging in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-3.1)
 - [Microsoft Docs - High-performance logging with LoggerMessage in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/loggermessage?view=aspnetcore-3.1)
