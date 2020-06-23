@@ -11,6 +11,47 @@ Samples and resources of how to design WebApi with .NET Core
 
 ## Routing
 
+From [the documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-3.1): *"Routing is responsible for matching incoming HTTP requests and dispatching those requests to the app's executable endpoints."*
+
+Saying differently routing is responsible for finding exact endpoint based on the request parameters - usually based on the URL pattern matching.
+
+Endpoint executes the logic that creates HTTP response based on request.
+
+To use routing and endpoints it's needed to call `UseRouting` and `UseEndpoints` extension method on app builder in `Startup.Configure` method. That will register routing in middleware pipeline.
+If you want to use Controllers then you should also call `AddControlers` in configure services (to register them in Dependency Container) and `MapControllers` inside `UseEndpoints` to map controllers routes configuration.
+
+```csharp
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // registers controllers in dependency injection container
+        services.AddControllers();
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        // registers routing in middleware pipeline
+        app.UseRouting();
+        
+        // defines endpoints to be routed
+        app.UseEndpoints(endpoints =>
+        {
+            // maps controllers routes to endpoints
+            endpoints.MapControllers();
+        });
+    }
+}
+```
+
+### Links:
+
+- [Microsoft Documentation - Routing in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-3.1)
+- [Microsoft Documentation - Routing to controller actions in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/routing?view=aspnetcore-3.1)
+- [DotNetMentors - http://dotnetmentors.com/mvc/explain-asp-net-mvc-routing-with-example.aspx](http://dotnetmentors.com/mvc/explain-asp-net-mvc-routing-with-example.aspx)
+- [StrathWeb - Dynamic controller routing in ASP.NET Core 3.0](https://www.strathweb.com/2019/08/dynamic-controller-routing-in-asp-net-core-3-0/)
+- [Andrew Lock - Accessing route values in endpoint middleware in ASP.NET Core 3.0](https://andrewlock.net/accessing-route-values-in-endpoint-middleware-in-aspnetcore-3/)
+
 ## REST
 
 ## API Versioning
@@ -273,6 +314,7 @@ public IActionResult Update([FromBody] UpdateReservation request)
 - [Logz.io - Best practices for managing ElasticSearch indices](https://logz.io/blog/managing-elasticsearch-indices/)
 - [Andrew Lock - Writing logs to Elasticsearch with Fluentd using Serilog in ASP.NET Core](https://andrewlock.net/writing-logs-to-elasticsearch-with-fluentd-using-serilog-in-asp-net-core/)
 - [Elastic Documentation - Install ElasticSearch with Docker](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html)
+- [AWS User Group Bengaluru - Log analytics with ELK stack](https://www.slideshare.net/AWSUsersGroupBengalu/log-analytics-with-elk-stack)
 
 ## CorrelationId
 
