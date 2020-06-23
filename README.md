@@ -15,7 +15,7 @@ From [the documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamenta
 
 Saying differently routing is responsible for finding exact endpoint based on the request parameters - usually based on the URL pattern matching.
 
-Endpoint executes the logic that creates HTTP response based on request.
+Endpoint executes the logic that creates an HTTP response based on request.
 
 To use routing and endpoints it's needed to call `UseRouting` and `UseEndpoints` extension method on app builder in `Startup.Configure` method. That will register routing in middleware pipeline.
 If you want to use Controllers then you should also call `AddControlers` in configure services (to register them in Dependency Container) and `MapControllers` inside `UseEndpoints` to map controllers routes configuration.
@@ -44,6 +44,43 @@ public class Startup
 }
 ```
 
+Note that those methods should be registered in the order as presented above. If the order is changed then it won't be registered properly.
+
+### Routing pipeline
+
+Routing is split into the following steps:
+- request URL parsing
+- perform matching against registered routes (it's done in parallel, so the order of registration doesn't matter)
+- from matching routes, remove all that do not match  routes constraints (eg. route parameter defined as int was not numeric)
+- select single best matching (the most concrete one) if possible, from the left routes. If there are still more than one matches - the exception is being thrown.
+
+Having eg. following routes:
+
+- `/Clients/List`
+- `/Clients/{id}`
+- `/Reservations/{id:alpha}`
+- `/Reservations/{id:int}`
+- `/Reservations/List`
+
+and trying to match `/Reservation/List` the routing process will find matching templates so:
+
+- `/Reservations/{id:alpha}`
+- `/Reservations/{id:int}`
+- `/Reservations/List`
+
+It matched the `Reservations` part and then both `{id}` routes (as `List` could be just string id text) and concrete part `List`.
+
+Then constraints will be verified and we'll end up with two routes (as `{id:int}` does not match because `List` is not an integer).
+
+- `/Reservations/{id:alpha}`
+- `/Reservations/List`
+
+From this set both are matching, but `List` is more concrete.
+
+Accordingly:
+- trying to match `Reservations/abcde` routing will match `/Reservations/{id:alpha}` route,
+- trying to match `Reservations/123` routing will match `/Reservations/{id:int}` route.
+ 
 ### Links:
 
 - [Microsoft Documentation - Routing in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-3.1)
@@ -72,19 +109,19 @@ By default in .NET Core there are six levels of logging (available through [LogL
 - `Trace` (value `0`) - the most detailed and verbose information about the application flow, 
 - `Debug` (`1`) - useful information during the development process (eg. local environment bug investigation),
 - `Information` (`2`) - usually important information about the application flow that can be useful for diagnostics and flow, 
-- `Warning` (`3`) - potential unexpected application event or error that's not blocking flow (eg. operation was successfully saved to database but notification failed) or transient error occurred but was succeeded after retry), 
-- `Error` (`4`) - unexpected application error - eg. not record found to update, database timeout, argument exception etc.,
-- `Critical` (`5`) - informing about critical events that require immediate action like application or system crash, end of disk space or database in irrecoverable state,
+- `Warning` (`3`) - potential unexpected application event or error that's not blocking flow (eg. operation was successfully saved to the database but notification failed) or transient error occurred but was succeeded after retry), 
+- `Error` (`4`) - unexpected application error - eg. no record found to update, database timeout, argument exception etc.,
+- `Critical` (`5`) - informing about critical events that require immediate action like application or system crash, end of disk space or database in the irrecoverable state,
 - `None` (`6`) - means no logs at all, used usually in the configuration to disable logging for selected category.
 
 It's important to keep in mind that `Trace` and `Debug` should not be used on production, and should be used only for development/debugging purposes (`Trace` is by default disabled). 
-Because of theirs characteristic they may contain sensitive application information to be effective (eg. system secrets, PII/GDPR Data). Because of that we need to be sure that on production environment they are disabled as that may end up with security leak. 
-As they're also verbose, then keeping them on production system may increase significantly cost of logs storage. Plus too much logs make them unreadable and hard to read.
+Because of their characteristic, they may contain sensitive application information to be effective (eg. system secrets, PII/GDPR Data). Because of that, we need to be sure that on production environment they are disabled as that may end up with security leak. 
+As they're also verbose, then keeping them on the production system may increase significantly cost of logs storage. Plus too many logs make them unreadable and hard to read.
 
 #### Log Categories
 
-Each logger instance needs to have assigned category. Categories allows to group logs messages (as category will be added to each log entry).
-By convention category should be passed as type parameter of [ILogger<T>](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.ilogger-1?view=dotnet-plat-ext-3.1). Usually it's the class that we're injecting logger, eg.
+Each logger instance needs to have an assigned category. Categories allow to group logs messages (as a category will be added to each log entry).
+By convention category should be passed as the type parameter of [ILogger<T>](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.ilogger-1?view=dotnet-plat-ext-3.1). Usually it's the class that we're injecting logger, eg.
 
 ```csharp
 [Route("api/Reservations")]
@@ -132,9 +169,9 @@ public class ReservationsController: Controller
 ```
 
 Categories are useful for searching through logs and diagnose issues. 
-As mentioned in previous section - it's also possible to define in different log levels for configuration.
+As mentioned in the previous section - it's also possible to define in different log levels for configuration.
 
-Eg. if you have a default log level `Information` and you need to investigate issues ocurring in specific controller (eg. `ReservationsController`) then you can change the log level to `Debug` for dedicated category.
+Eg. if you have a default log level `Information` and you need to investigate issues occurring in a specific controller (eg. `ReservationsController`) then you can change the log level to `Debug` for a dedicated category.
 
 ```json
 {
@@ -152,7 +189,7 @@ Then for all categories but `LoggingSamples.Controllers.ReservationController` y
 The other example is to disable logs from selected category - eg. 
 - because you noticed that is logging some sensitive information and you need quickly to change that, 
 - you want to mute some unimportant system logs,
-- you want to make sure that logs from specific category (eg. `LoggingSamples.Controllers.AuthenticationController`) won't be ever logged on prod.
+- you want to make sure that logs from a specific category (eg. `LoggingSamples.Controllers.AuthenticationController`) won't be ever logged on prod.
 
 ```json
 {
@@ -167,7 +204,7 @@ The other example is to disable logs from selected category - eg.
 
 #### Log Scopes
 
-Besides categories it's possible to define logging scopes. They allow have add set of custom information to each log entry.
+Besides categories, it's possible to define logging scopes. They allow having add set of custom information to each log entry.
 
 Scopes are disabled by default - if you'd like to use them then you need to toggle them on in configuration:
 
@@ -205,7 +242,7 @@ public async Task<IActionResult> Create(Guid id, [FromBody] UpdateReservationReq
 
 You can create also scopes with aspect programming way - so eg. in middleware to inject scopes globally. 
 
-Example would be injecting as logging scope information from request eg. client IP, user id.
+An example would be injecting as logging scope information from request eg. client IP, user id.
  
 Sample below shows how to inject [CorellationID](#correlationid) into logger scope.
 
@@ -235,7 +272,7 @@ public class CorrelationIdMiddleware
 
 #### Log Events
 
-The other option for grouping logs are log events. They are used normally to group them eg. by purpose - eg. updating an entity, starting controller action, not finding entity etc.
+The other option for grouping logs is log events. They are used normally to group them eg. by purpose - eg. updating an entity, starting controller action, not finding entity etc.
 To define them you need to provide a standardized list of int event ids. Eg.
 
 ```csharp
