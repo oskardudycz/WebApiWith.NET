@@ -46,13 +46,106 @@ public class Startup
 
 Note that those methods should be registered in the order as presented above. If the order is changed then it won't be registered properly.
 
+### Route templates
+
+Templates add flexibility to supported URL definition.
+
+The simplest option is **static URL** where you have just URL, eg:
+- `/Reservations/List`
+- `/GetUsers`
+- `/Orders/ByStatuses/Closed`
+
+Static URLs are fine for the list endpoints, but if we'd like to get a list of records.  
+To allow dynamic matching (eg. reservation by Id) we need to use **parameters**. They can be added using `{parameterName}` syntax. eg.
+- `/Reservations/{id}`
+- `/users/{id}/orders/{orderId}`
+
+They don't need to be only used instead of concrete URL part. You can also do eg.:
+- `/Reservations?status={reservationStatus}&user={userId}` - this will get parameters from the query string and match eg. `/Reservations?status=Open&userId=123` and will have `status` parameter equal to `Open` and `userId` equal to `123`,
+- `/Download/{fileName}.{extension}` - this will match eg. `/Download/testFile.txt` and end up with two route data parameters - `fileName` with `testFile` value and `extension` with `txt` accordingly,
+- `/Configuration/{entityType}Dictionary` - this will match `/Configuration/OrderStatusDictionary` and will have `entityType` parameter with `OrderStatus` value.
+
+You can also add **catch-all** parameters - `{**parameterName}`, that can be used as fallback when no route was found:
+- `/Reservations/{id}/{**reservationPath}` - this will match eg. `/Reservations/123/changeStatus/confirmed` and will have `reservationPath` parameter with `changeStatus/confirmed` value
+
+It's also possible to make the parameter optional by adding `?` after its name:
+- `/Reservations/{id?}` - this will match both `/Reservations` and `/Reservation/123` routes
+
+Route template parameters can contain **constraints** to narrow down the matched results. To use it you need to add constraint name after parameter name `{prameter:constraintName}`.
+There is a number of predefined route constraints, eg:
+- `/Reservations/{id:guid}` - will match eg. `/Reservations/632863d2-5cbf-4c9f-92e1-749d264d965e` but wont' match eg. `/Reservations/123`,
+- `/Reservations/top/{limit:int:minlength(1):maxLength(10)` - this will allow to pass integers between `1` and `10` for `limit` parameter. So it will allow to get at most top 10 reservations,
+- `/Inbox?from={fromEmailAddress:regex(\\[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4})}` - regex can be also used to eg. check email address or provide more advanced format check. This will match `/Inbox?from=john.doe@company.com` and will have `fromEmailAddress` parameter with `john.doe@company.com` value,
+- see more constraints examples in [route constraint documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-3.1#route-constraint-reference).
+
+Note - failing constraint will result with `400 - BadRequest` status code, however, the messages are generic and not user friendly. So if you'd like to make them more related to your business case - it's suggested to do move it to validation inside the code.
+
+You can also define your **custom constraint**. The sample use case would be when you want to provide the validation for your business id format.
+
+See sample that validates if reservation id is built from 3 non-empty parts split by `|`;
+
+```csharp
+public class ReservationIdConstraint : IRouteConstraint
+{
+    public bool Match(
+        HttpContext httpContext,
+        IRouter route,
+        string routeKey,
+        RouteValueDictionary values,
+        RouteDirection routeDirection)
+    {
+        if (routeKey == null)
+        {
+            throw new ArgumentNullException(nameof(routeKey));
+        }
+
+        if (values == null)
+        {
+            throw new ArgumentNullException(nameof(values));
+        }
+
+        if (!values.TryGetValue(routeKey, out var value) && value != null)
+        {
+            return false;
+        }
+        
+        var reservationId = Convert.ToString(value, CultureInfo.InvariantCulture);
+        
+        return reservationId.Split("|").Where(part => !string.IsNullOrWhiteSpace(part)).Count() == 3;
+    }
+}
+```
+
+You need to register it in `Startup.ConfigureServices` in `AddRouting` method:
+
+```csharp
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // registers controllers in dependency injection container
+        services.AddControllers();
+
+        services.AddRouting(options =>
+        {
+            options.ConstraintMap.Add("reservationId", typeof(ReservationIdConstraint));
+        });
+    }
+
+    // (...)
+}
+```
+
+Then you can use it to in route:
+- `/Reservations/{id:reservationId}` - this will match `/Reservations/RES|123|01` (and get `id` parameter with value `RES|123|01`) but wont't match `/Reservations/123`.
+
 ### Routing pipeline
 
 Routing is split into the following steps:
 - request URL parsing
 - perform matching against registered routes (it's done in parallel, so the order of registration doesn't matter)
 - from matching routes, remove all that do not match  routes constraints (eg. route parameter defined as int was not numeric)
-- select single best matching (the most concrete one) if possible, from the left routes. If there are still more than one matches - the exception is being thrown.
+- select single best matching (the most concrete one) if possible, from the left routes. If there are still more than one matches - the exception is being thrown. If there was only single match but value does not match constraint then exception will be thrown.
 
 Having eg. following routes:
 
