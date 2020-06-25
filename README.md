@@ -1,13 +1,52 @@
 # WebApi with .NET Core
+
 Samples and resources of how to design WebApi with .NET Core
 
-## Projects structures
+- [WebApi with .NET Core](#webapi-with-net-core)
+  * [Project Configuration](#project-configuration)
+  * [Routing](#routing)
+    + [Route templates](#route-templates)
+      - [Route parameters](#route-parameters)
+      - [Route constraints](#route-constraints)
+    + [Routing pipeline](#routing-pipeline)
+    + [Routing with endpoints](#routing-with-endpoints)
+    + [Routing with controllers](#routing-with-controllers)
+      - [Conventional controllers routing](#conventional-controllers-routing)
+      - [Routing with attributes](#routing-with-attributes)
+    + [Links](#links)
+  * [REST](#rest)
+  * [API Versioning](#api-versioning)
+  * [Filters](#filters)
+  * [Middleware](#middleware)
+  * [Inversion of Control and Dependency Injection](#inversion-of-control-and-dependency-injection)
+  * [API Testing](#api-testing)
+  * [Projects structure](#projects-structure)
+  * [Logging](#logging)
+    + [General](#general)
+      - [Log Levels](#log-levels)
+      - [Log Categories](#log-categories)
+      - [Log Scopes](#log-scopes)
+      - [Log Events](#log-events)
+      - [Links](#links-1)
+    + [Serilog](#serilog)
+      - [Links](#links-2)
+    + [NLog](#nlog)
+      - [Links](#links-3)
+    + [Elastic Stack - Kibana, LogStash etc.](#elastic-stack---kibana--logstash-etc)
+      - [Links](#links-4)
+  * [CorrelationId](#correlationid)
+      - [Links](#links-5)
+  * [Docker](#docker)
+  * [CI/CD](#ci-cd)
+  * [Storage](#storage)
+    + [EntityFramework](#entityframework)
+    + [Dapper](#dapper)
+  * [Caching](#caching)
+  * [GraphQL](#graphql)
+  * [CQRS](#cqrs)
+  * [OAuth](#oauth)
 
-## Inversion of Control and Dependency Injection
-
-## Docker
-
-## CI/CD
+## Project Configuration
 
 ## Routing
 
@@ -55,6 +94,8 @@ The simplest option is **static URL** where you have just URL, eg:
 - `/GetUsers`
 - `/Orders/ByStatuses/Closed`
 
+#### Route parameters
+
 Static URLs are fine for the list endpoints, but if we'd like to get a list of records.  
 To allow dynamic matching (eg. reservation by Id) we need to use **parameters**. They can be added using `{parameterName}` syntax. eg.
 - `/Reservations/{id}`
@@ -70,6 +111,8 @@ You can also add **catch-all** parameters - `{**parameterName}`, that can be use
 
 It's also possible to make the parameter optional by adding `?` after its name:
 - `/Reservations/{id?}` - this will match both `/Reservations` and `/Reservation/123` routes
+
+#### Route constraints
 
 Route template parameters can contain **constraints** to narrow down the matched results. To use it you need to add constraint name after parameter name `{prameter:constraintName}`.
 There is a number of predefined route constraints, eg:
@@ -174,7 +217,79 @@ Accordingly:
 - trying to match `Reservations/abcde` routing will match `/Reservations/{id:alpha}` route,
 - trying to match `Reservations/123` routing will match `/Reservations/{id:int}` route.
  
-### Links:
+### Routing with endpoints
+
+ASP.NET Core allows to define raw endpoints without the need to use controllers. They can be defined inside `UseEndpoints` method, by calling `UseGet`, `UsePost` etc. methods:
+
+```csharp
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        // registers routing in middleware pipeline
+        app.UseRouting();
+        
+        // defines endpoints to be routed
+        app.UseEndpoints(endpoints =>
+        {
+             endpoints.MapGet("/Reservations/{id}", async context =>
+             {
+                 var name = context.Request.RouteValues["id"];
+                 await context.Response.WriteAsync($"Reservation with {id}!");
+             });
+        });
+    }
+}
+``` 
+
+Using endpoints currently requires a lot of bare-bone code. This will change with .NET 5 where it will get a set of useful methods that will make it first-class citizen. See more in accepted API review: [link](https://github.com/dotnet/aspnetcore/issues/17160).
+
+### Routing with controllers
+
+Http requests can be mapped to controller with two ways: conventional and through attributes
+
+#### Conventional controllers routing
+
+Conventional is done by calling `MapControllerRoute` method inside `UseEndpoints`. It allows to provide route template (`pattern`), name and controller action mapping.
+
+```csharp
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        // registers routing in middleware pipeline
+        app.UseRouting();
+        
+        // defines endpoints to be routed
+        app.UseEndpoints(endpoints =>
+        {
+            // defines concrete routing to single controller action
+            endpoints.MapControllerRoute(name: "blog",
+                pattern: "Reservations/{id}",
+                defaults: new { controller = "Reservations", action = "Get" });
+            
+            // defines "catch-all" routing that will route all requests
+            // matching `/Controller/Action` or `/Controller/Action/id`
+            endpoints.MapControllerRoute(name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+        });
+    }
+}
+``` 
+
+Important thing to note is controllers should have the `Controller` suffix in the name (eg. `ReservationsController`), but routes should be defined without it (so `Reservations`).
+
+#### Routing with attributes
+
+### Links
 
 - [Microsoft Documentation - Routing in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-3.1)
 - [Microsoft Documentation - Routing to controller actions in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/mvc/controllers/routing?view=aspnetcore-3.1)
@@ -186,11 +301,15 @@ Accordingly:
 
 ## API Versioning
 
-## API Testing
-
 ## Filters
 
 ## Middleware
+
+## Inversion of Control and Dependency Injection
+
+## API Testing
+
+## Projects structure
 
 ## Logging
 
@@ -453,6 +572,10 @@ public IActionResult Update([FromBody] UpdateReservation request)
 - [Steve Gordon - CorrelationId NuGet Package](https://github.com/stevejgordon/CorrelationId)
 - [Vicenç García - Capturing and forwarding correlation IDs in ASP.NET Core](https://vgaltes.com/post/forwarding-correlation-ids-in-aspnetcore/)
 - [Vicenç García - Capturing and forwarding correlation IDs in ASP.NET Core, the easy way](https://vgaltes.com/post/forwarding-correlation-ids-in-aspnetcore-version-2/)
+
+## Docker
+
+## CI/CD
 
 ## Storage
 
