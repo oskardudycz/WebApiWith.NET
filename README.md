@@ -57,31 +57,6 @@ Saying differently routing is responsible for finding exact endpoint based on th
 Endpoint executes the logic that creates an HTTP response based on request.
 
 To use routing and endpoints it's needed to call `UseRouting` and `UseEndpoints` extension method on app builder in `Startup.Configure` method. That will register routing in middleware pipeline.
-If you want to use Controllers then you should also call `AddControlers` in configure services (to register them in Dependency Container) and `MapControllers` inside `UseEndpoints` to map controllers routes configuration.
-
-```csharp
-public class Startup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        // registers controllers in dependency injection container
-        services.AddControllers();
-    }
-
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        // registers routing in middleware pipeline
-        app.UseRouting();
-        
-        // defines endpoints to be routed
-        app.UseEndpoints(endpoints =>
-        {
-            // maps controllers routes to endpoints
-            endpoints.MapControllers();
-        });
-    }
-}
-```
 
 Note that those methods should be registered in the order as presented above. If the order is changed then it won't be registered properly.
 
@@ -127,7 +102,7 @@ You can also define your **custom constraint**. The sample use case would be whe
 
 See sample that validates if reservation id is built from 3 non-empty parts split by `|`;
 
-```csharp
+```c#
 public class ReservationIdConstraint : IRouteConstraint
 {
     public bool Match(
@@ -161,7 +136,7 @@ public class ReservationIdConstraint : IRouteConstraint
 
 You need to register it in `Startup.ConfigureServices` in `AddRouting` method:
 
-```csharp
+```c#
 public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
@@ -221,7 +196,7 @@ Accordingly:
 
 ASP.NET Core allows to define raw endpoints without the need to use controllers. They can be defined inside `UseEndpoints` method, by calling `UseGet`, `UsePost` etc. methods:
 
-```csharp
+```c#
 public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
@@ -256,7 +231,7 @@ Http requests can be mapped to controller with two ways: conventional and throug
 
 Conventional is done by calling `MapControllerRoute` method inside `UseEndpoints`. It allows to provide route template (`pattern`), name and controller action mapping.
 
-```csharp
+```c#
 public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
@@ -288,6 +263,152 @@ public class Startup
 Important thing to note is controllers should have the `Controller` suffix in the name (eg. `ReservationsController`), but routes should be defined without it (so `Reservations`).
 
 #### Routing with attributes
+
+Controllers are derived from the MVC pattern concept. They are responsible for orchestration between requests (inputs) and models. 
+Routing can be defined by putting attributes on top of method and controller definition.
+
+If you want to use Controllers then you should also call `AddControlers` in configure services (to register them in Dependency Container) and `MapControllers` inside `UseEndpoints` to map controllers routes configuration.
+
+```c#
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // registers controllers in dependency injection container
+        services.AddControllers();
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        // registers routing in middleware pipeline
+        app.UseRouting();
+        
+        // defines endpoints to be routed
+        app.UseEndpoints(endpoints =>
+        {
+            // maps controllers routes to endpoints
+            endpoints.MapControllers();
+        });
+    }
+}
+```
+
+**Route attribute**
+
+The most generic attribute is `[Route]`. It routes that will direct to the method that it's marking.
+
+```c#
+public class ReservationsController : Controller
+{
+    [Route("")]
+    [Route("Reservations")]
+    [Route("Reservations/List")]
+    [Route("Reservations/List/{status?}")]
+    public IActionResult List(string status)
+    {
+        //(...)
+    }
+
+    [Route("Reservations/Summary")]
+    [Route("Reservations/Summary/{userId?}")]
+    public IActionResult Summary(int? userId)
+    {
+        // (...)
+    }
+}
+```
+
+In this example routes:
+- `/`, `/Reservations`, `/Reservations/List`, `/Reservations/List/Open` will be routed to `List` method,
+- `/Reservations/Summary`, `Reservations/Summary/123` will be routed to `Summary` method.
+
+Important note is that you should not use `action`, `area`, `controller`, `handler`, `page` as route template variable (eg. `/Reservations/{page}`). Those names are reserved for the internals of routing logic. Using them will make routing fail.
+
+**HTTP methods attributes**
+
+ASP.NET Core provides also more specific attributes `[HttpGet]`, `[HttpPost]`, `[HttpPut]`, `[HttpDelete]`, `[HttpHead]`, `[HttpPatch]` representing HTTP methods. Besides the URL routing they also perform matching based on the HTTP method.
+Normally using them you should add `[Route]` attribute on a controller that will add prefix for all the routes defined by HTTP verbs attributes.
+
+Sample of the most common CRUD controller definition:
+
+```c#
+[Route("api/[controller]")]
+[ApiController]
+public class ReservationsController : ControllerBase
+{
+    [HttpGet]
+    public IActionResult List([FromQuery] string filter)
+    {
+        //(...)
+    }
+
+    [HttpGet("{id}")]
+    public IActionResult Get(int id)
+    {
+        // (...)
+    }
+    
+    [HttpPost]
+    public IActionResult Create([FromBody] CreateReservation request)
+    {
+        // (...)
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult Put(int id, [FromBody] UpdateReservation request)
+    {
+        // (...)
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id)
+    {
+        // (...)
+    }
+}
+```
+
+Using `[Route("api/[controller]")]` will define route based on the controller name - in this case it will be `/api/Reservations`. By convention WebApi routes usually start with a `/api` prefix. Prefix existence is optional and can have a different value. If you'd like you could also add suffix eg. `[Route("api/[controller]/open")]` if eg. you'd like to have dedicated controller for open reservations.
+The benefit of using `[controller]` is that when you rename controller the route will be also updated. If you want to avoid accidental route name change then you should use concrete route eg. `[Route("api/reservations")]`
+
+Having that:
+- `GET /api/Reservations` will be routed to `List` method. Value for the `filter` parameter, because of `[FromQuery]` attribute will be mapped from request query string. For `GET /api/Reservations?filter=open` it will have `open` value, for default route `GET /api/Reservations` it will be `null`,
+- `GET /api/Reservations/123` will be routed to `Get` method. Value of the `id` parameter will be taken by convention from the route parameter,
+- `POST /api/Reservations/123` will be routed to `Create` method. Value for the `request` parameter, because of `[FromBody]` attribute will be mapped from request body (so eg. JSON sent from client),
+- `PUT /api/Reservations/123` will be routed to `Update` method,
+- `DELETE /api/Reservations/123` will be routed to `Delete` method. 
+
+It's not mandatory to use route prefix. Most of the time it's useful, but when you have nesting inside the API then it's worth setting up it manually eg. 
+
+```c#
+[ApiController]
+public class UserReservationsController : ControllerBase
+{
+    [HttpGet("api/users/{userId}/reservations")]
+    public IActionResult List(int userId, [FromQuery] string filter)
+    {
+        //(...)
+    }
+
+    [HttpGet("api/users/{userId}/reservations/{id}")]
+    public IActionResult Get(int userId, int id)
+    {
+        // (...)
+    }
+    
+    [HttpPost("api/users/{userId}/reservations/{id}")]
+    public IActionResult Create(int userId, [FromBody] CreateReservation request)
+    {
+        // (...)
+    }
+
+    [HttpPut("api/users/{userId}/reservations/{id}/status")]
+    public IActionResult Put(int userId, int id, [FromBody] UpdateReservationStatus request)
+    {
+        // (...)
+    }
+}
+```
 
 ### Links
 
@@ -335,7 +456,7 @@ As they're also verbose, then keeping them on the production system may increase
 Each logger instance needs to have an assigned category. Categories allow to group logs messages (as a category will be added to each log entry).
 By convention category should be passed as the type parameter of [ILogger<T>](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.ilogger-1?view=dotnet-plat-ext-3.1). Usually it's the class that we're injecting logger, eg.
 
-```csharp
+```c#
 [Route("api/Reservations")]
 public class ReservationsController: Controller
 {
@@ -367,7 +488,7 @@ Log category created with type parameter will contain full type name (so eg. `Lo
 
 It's also possible (however not recommended) to define that through [ILoggerFactory](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.iloggerfactory?view=dotnet-plat-ext-3.1) `CreateLogger(string categoryName)` method:
 
-```csharp
+```c#
 [Route("api/Reservations")]
 public class ReservationsController: Controller
 {
@@ -435,7 +556,7 @@ Having that you can use [ILogger.BeginScope method](https://docs.microsoft.com/e
 
 The first potential use case is to always add entity type and identifier to all logs in business logic to not need to add it in each entry. Eg. reservation id during its update. You can also create nested scopes.
 
-```csharp
+```c#
 [HttpPut]
 public async Task<IActionResult> Create(Guid id, [FromBody] UpdateReservationRequest request)
 {
@@ -458,7 +579,7 @@ An example would be injecting as logging scope information from request eg. clie
  
 Sample below shows how to inject [CorellationID](#correlationid) into logger scope.
 
-```csharp
+```c#
 public class CorrelationIdMiddleware
 {
     private readonly RequestDelegate next;
@@ -487,7 +608,7 @@ public class CorrelationIdMiddleware
 The other option for grouping logs is log events. They are used normally to group them eg. by purpose - eg. updating an entity, starting controller action, not finding entity etc.
 To define them you need to provide a standardized list of int event ids. Eg.
 
-```csharp
+```c#
 public class LogEvents
 {
     public const int InvalidRequest = 911;
@@ -498,7 +619,7 @@ public class LogEvents
 
 Sample usage:
 
-```csharp
+```c#
 [HttpPut]
 public IActionResult Update([FromBody] UpdateReservation request)
 {
