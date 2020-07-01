@@ -698,6 +698,18 @@ public IActionResult Update([FromBody] UpdateReservation request)
 
 ## CI/CD
 
+### Azure Pipelines
+
+#### Links
+- [StackOverflow - Entity Framework Migrations in Azure Pipelines](https://stackoverflow.com/a/58430298)
+- [Azure DevOps Labs - Deploying a Docker based web application to Azure App Service](https://azuredevopslabs.com/labs/vstsextend/docker/)
+- [Chris Sainty - Deploying Containerised Apps to Azure Web App for Containers](https://chrissainty.com/containerising-blazor-applications-with-docker-deploying-containerised-apps-to-azure-web-app-for-containers/)
+- [Microsoft Documentation - Run a custom Windows container in Azure](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-windows-container)
+- [Barbara 4bes - Step by step: Setup a CICD pipeline in Azure DevOps for ARM templates](https://4bes.nl/2020/06/14/step-by-step-setup-a-cicd-pipeline-in-azure-devops-for-arm-templates/)
+
+### Github Actions
+- [Barbara 4bes - Step by step: Test and deploy ARM Templates with GitHub Actions](https://4bes.nl/2020/06/28/step-by-step-test-and-deploy-arm-templates-with-github-actions/amp/)
+
 ## Storage
 
 ### EntityFramework
@@ -707,6 +719,9 @@ public IActionResult Update([FromBody] UpdateReservation request)
 ## Caching
 
 ## GraphQL
+
+### Links
+- [Michael Staib - HotChocolate: An Introduction to GraphQL for ASP.NET Core](https://www.youtube.com/watch?v=Yy9wOhiWBJg)
 
 ## CQRS
 
