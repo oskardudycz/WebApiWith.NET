@@ -700,6 +700,104 @@ public IActionResult Update([FromBody] UpdateReservation request)
 
 ### Azure Pipelines
 
+#### Building and pushing image to Docker Registry
+
+Define DOCKER file with multiple stages to build the app image:
+
+```dockerfile
+# Build image
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS builder
+WORKDIR /app
+
+  # Copy files
+COPY . ./
+
+RUN dotnet restore
+RUN dotnet build -c Release --no-restore
+
+RUN dotnet publish -c Release --no-build -o out
+
+  # Build runtime image
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+WORKDIR /app
+COPY --from=builder /app/out .
+ENV ASPNETCORE_URLS="http://*:5000"
+ENTRYPOINT ["dotnet", "AzureContainerRegistry.dll"]
+```
+
+Follow following steps:
+- https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/containers/acr-template?view=azure-devops
+
+Sample build definition:
+
+```yaml
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+
+  paths:
+    include:
+      - CD/AzureContainerRegistry/*
+pr:
+  branches:
+    include:
+      - master
+
+  paths:
+    include:
+      - CD/AzureContainerRegistry/*
+        
+######################################################
+#   Variables
+######################################################
+variables:
+  # image version (tag) variables
+  major: 1
+  minor: 0
+  patch: 0
+  build: $[counter(variables['minor'], 0)] #this will reset when we bump patch
+  tag: $(major).$(minor).$(patch).$(build)
+  vmImageName: 'ubuntu-16.04'
+  dockerfilePath: CD/AzureContainerRegistry/DOCKERFILE
+  imageRepository: WebApiWithNETCoreContainerRegistry
+  dockerRegistryServiceConnection: AzureDockerRegistryWebApiWithNetCore
+
+stages:
+  - stage: Build
+    displayName: Build and push stage
+    jobs:
+      - job: Build
+        displayName: Build job
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - checkout: self
+          
+          - task: Docker@2
+            displayName: Build a Docker image
+            inputs:
+              command: build
+              repository: $(imageRepository)
+              dockerfile: $(dockerfilePath)
+              containerRegistry: $(dockerRegistryServiceConnection)
+              tags: |
+                $(tag)
+  
+          - task: Docker@2
+            displayName: Push a Docker image to container registry
+            condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+            inputs:
+              command: push
+              repository: $(imageRepository)
+              dockerfile: $(dockerfilePath)
+              containerRegistry: $(dockerRegistryServiceConnection)
+              tags: |
+                $(tag)
+```
+See more in the pipeline definition: [link](https://dev.azure.com/oskardudycz/WebApiWithNetCore/_build?definitionId=5).
+
 #### Links
 - [StackOverflow - Entity Framework Migrations in Azure Pipelines](https://stackoverflow.com/a/58430298)
 - [Azure DevOps Labs - Deploying a Docker based web application to Azure App Service](https://azuredevopslabs.com/labs/vstsextend/docker/)
