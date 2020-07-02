@@ -28,7 +28,7 @@ variables:
   minor: 0
   patch: 0
   build: $[counter(variables['minor'], 0)] #this will reset when we bump patch
-  tag: $(major).$(minor).$(patch).${build}
+  tag: $(major).$(minor).$(patch).$(build)
   vmImageName: 'ubuntu-16.04'
   dockerfilePath: CD/AzureContainerRegistry/DOCKERFILE
   imageRepository: WebApiWithNETCoreContainerRegistry
@@ -49,7 +49,9 @@ stages:
             displayName: Build a Docker image
             inputs:
               command: build
+              repository: $(imageRepository)
               dockerfile: $(dockerfilePath)
+              containerRegistry: $(dockerRegistryServiceConnection)
               tags: |
                 $(tag)
   
