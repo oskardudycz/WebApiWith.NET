@@ -1,0 +1,65 @@
+######################################################
+#   Triggers
+######################################################
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+
+  paths:
+    include:
+      - CD/AzureContainerRegistry/*
+pr:
+  branches:
+    include:
+      - master
+
+  paths:
+    include:
+      - CD/AzureContainerRegistry/*
+        
+######################################################
+#   Variables
+######################################################
+variables:
+  # image version (tag) variables
+  major: 1
+  minor: 0
+  patch: 0
+  build: $[counter(variables['minor'], 0)] #this will reset when we bump patch
+  tag: $(major).$(minor).$(patch).${build}
+  vmImageName: 'ubuntu-16.04'
+  dockerfilePath: CD/AzureContainerRegistry/DOCKERFILE
+  imageRepository: WebApiWithNETCoreContainerRegistry
+  dockerRegistryServiceConnection: AzureDockerRegistryWebApiWithNetCore
+
+stages:
+  - stage: Build
+    displayName: Build and push stage
+    jobs:
+      - job: Build
+        displayName: Build job
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - checkout: self
+          
+          - task: Docker@2
+            displayName: Build a Docker image
+            inputs:
+              command: build
+              dockerfile: $(dockerfilePath)
+              tags: |
+                $(tag)
+  
+          - task: Docker@2
+            displayName: Push a Docker image to container registry
+            condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+            inputs:
+              command: push
+              repository: $(imageRepository)
+              dockerfile: $(dockerfilePath)
+              containerRegistry: $(dockerRegistryServiceConnection)
+              tags: |
+                $(tag)
