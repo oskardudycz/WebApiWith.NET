@@ -1,0 +1,44 @@
+######################################################
+#   Triggers
+######################################################
+trigger:
+  batch: true
+  branches:
+    include:
+      - master
+
+  paths:
+    include:
+      - CD/DockerContainerRegistry/*
+pr:
+  branches:
+    include:
+      - master
+
+  paths:
+    include:
+      - CD/DockerContainerRegistry/*
+        
+######################################################
+#   Variables
+######################################################
+variables:
+  # image version (tag) variables
+  major: 1
+  minor: 0
+  patch: 0
+  build: $[counter(variables['minor'], 0)] #this will reset when we bump patch
+  tag: $(major).$(minor).$(patch).$(build)
+  vmImageName: 'ubuntu-16.04'
+  dockerfilePath: CD/DockerContainerRegistry/DOCKERFILE
+  imageRepository: WebApiWithNETCoreContainerRegistry
+  dockerRegistryServiceConnection: AzureDockerRegistryWebApiWithNetCore
+
+stages:
+  - template: AzureDevOps/Stages/BuildAndPublishDocker.yml
+    parameters:
+      imageRepository: imageRepository
+      dockerRegistryServiceConnection: dockerRegistryServiceConnection
+      tag: tag
+      vmImageName: vmImageName
+      dockerfilePath: dockerfilePath

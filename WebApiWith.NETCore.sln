@@ -32,11 +32,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging.ElasticStack", "Log
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CD", "CD", "{3A3A1A8D-CDC9-4D69-8039-34853C823716}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureContainerRegistry", "AzureContainerRegistry", "{E0C4C050-7AC5-49C1-8081-830D1FEA904A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DockerContainerRegistry", "DockerContainerRegistry", "{E0C4C050-7AC5-49C1-8081-830D1FEA904A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{23D3B0CF-62EF-43E3-85BF-462892AE55B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureContainerRegistry", "CD\AzureContainerRegistry\AzureContainerRegistry.csproj", "{34F3F494-BA5E-4462-BA8C-38E1F2D54A01}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockerContainerRegistry", "CD\DockerContainerRegistry\DockerContainerRegistry.csproj", "{34F3F494-BA5E-4462-BA8C-38E1F2D54A01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

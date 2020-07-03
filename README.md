@@ -701,6 +701,9 @@ public IActionResult Update([FromBody] UpdateReservation request)
 
 ## Docker
 
+### Links
+- [Microsoft Docker images - https://hub.docker.com/_/microsoft-dotnet-core-sdk]
+
 ## CI/CD
 
 ### Azure Pipelines
@@ -727,7 +730,7 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 WORKDIR /app
 COPY --from=builder /app/out .
 ENV ASPNETCORE_URLS="http://*:5000"
-ENTRYPOINT ["dotnet", "AzureContainerRegistry.dll"]
+ENTRYPOINT ["dotnet", "DockerContainerRegistry.dll"]
 ```
 
 Follow the steps from article:
@@ -744,7 +747,7 @@ trigger:
 
   paths:
     include:
-      - CD/AzureContainerRegistry/*
+      - CD/DockerContainerRegistry/*
 pr:
   branches:
     include:
@@ -752,7 +755,7 @@ pr:
 
   paths:
     include:
-      - CD/AzureContainerRegistry/*
+      - CD/DockerContainerRegistry/*
         
 ######################################################
 #   Variables
@@ -765,7 +768,7 @@ variables:
   build: $[counter(variables['minor'], 0)] #this will reset when we bump patch
   tag: $(major).$(minor).$(patch).$(build)
   vmImageName: 'ubuntu-16.04'
-  dockerfilePath: CD/AzureContainerRegistry/DOCKERFILE
+  dockerfilePath: CD/DockerContainerRegistry/DOCKERFILE
   imageRepository: WebApiWithNETCoreContainerRegistry
   dockerRegistryServiceConnection: AzureDockerRegistryWebApiWithNetCore
 

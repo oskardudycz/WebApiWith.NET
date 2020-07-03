@@ -9,7 +9,7 @@ trigger:
 
   paths:
     include:
-      - CD/AzureContainerRegistry/*
+      - CD/DockerContainerRegistry/*
 pr:
   branches:
     include:
@@ -17,7 +17,7 @@ pr:
 
   paths:
     include:
-      - CD/AzureContainerRegistry/*
+      - CD/DockerContainerRegistry/*
         
 ######################################################
 #   Variables
@@ -30,8 +30,8 @@ variables:
   build: $[counter(variables['minor'], 0)] #this will reset when we bump patch
   tag: $(major).$(minor).$(patch).$(build)
   vmImageName: 'ubuntu-16.04'
-  dockerfilePath: CD/AzureContainerRegistry/DOCKERFILE
-  imageRepository: WebApiWithNETCoreContainerRegistry
+  dockerfilePath: CD/DockerContainerRegistry/DOCKERFILE
+  imageRepository: WebApiWithNETCore
   dockerRegistryServiceConnection: AzureDockerRegistryWebApiWithNetCore
 
 stages:
