@@ -31,8 +31,8 @@ variables:
   tag: $(major).$(minor).$(patch).$(build)
   vmImageName: 'ubuntu-16.04'
   dockerfilePath: CD/DockerContainerRegistry/DOCKERFILE
-  imageRepository: WebApiWithNETCore
-  dockerRegistryServiceConnection: AzureDockerRegistryWebApiWithNetCore
+  imageRepository: DockerContainerRegistrySample
+  dockerRegistryServiceConnection: DockerHubDockerRegstry
 
 stages:
   - template: AzureDevOps/Stages/BuildAndPublishDocker.yml
