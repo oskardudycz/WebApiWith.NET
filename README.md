@@ -726,10 +726,13 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS builder
 WORKDIR /app
 
 # Copy project files
-COPY . ./
+COPY *.csproj ./
 
 # Restore nuget packages
 RUN dotnet restore
+
+# Copy project files
+COPY . ./
 
 # Build project with Release configuration
 # and no restore, as we did it already
@@ -765,12 +768,15 @@ ENV ASPNETCORE_URLS="http://*:5000"
 # sets entry point command to automatically 
 # run application on `docker run`
 ENTRYPOINT ["dotnet", "DockerContainerRegistry.dll"]
+
 ```
 
 ### Links
-- [Download Docker](https://hub.docker.com)
+- [Download Docker](https://docs.docker.com/desktop/)
 - [Docker Hub](https://hub.docker.com)
 - [Microsoft Docker images](https://hub.docker.com/_/microsoft-dotnet-core-sdk)
+- [Visual Studio Code - ASP.NET Core in a container](https://code.visualstudio.com/docs/containers/quickstart-aspnet-core)
+- [Vladislav Supalov - Docker ARG, ENV and .env - a Complete Guide](https://vsupalov.com/docker-arg-env-variable-guide/)
 
 ## CI/CD
 
