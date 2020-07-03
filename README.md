@@ -730,7 +730,7 @@ ENV ASPNETCORE_URLS="http://*:5000"
 ENTRYPOINT ["dotnet", "AzureContainerRegistry.dll"]
 ```
 
-Follow following steps:
+Follow the steps from article:
 - https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/containers/acr-template?view=azure-devops
 
 Sample build definition:
@@ -829,5 +829,10 @@ See more in the pipeline definition: [link](https://dev.azure.com/oskardudycz/We
 ## CQRS
 
 ## OAuth 
+
+### Links
+- [Microsoft Documentation - Security and Identity](https://docs.microsoft.com/en-us/aspnet/core/security/?view=aspnetcore-3.1)
+- [Identity Server documentation](http://docs.identityserver.io)
+- [Auth0 - SSO for Regular Web Apps: ASP.NET Core Implementation](https://auth0.com/docs/architecture-scenarios/web-app-sso/implementation-aspnetcore)
 
 
