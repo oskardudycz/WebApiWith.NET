@@ -36,7 +36,7 @@ RUN dotnet publish -c Release --no-build -o out
 #  Use other build image as the final one
 #    that won't have source codes
 ########################################
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine
+FROM mcr.microsoft.com/dotnet/core/runtime:3.1-alpine
 
 # Setup working directory for project
 WORKDIR /app
