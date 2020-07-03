@@ -3,6 +3,7 @@
 Samples and resources of how to design WebApi with .NET Core
 
 - [WebApi with .NET Core](#webapi-with-net-core)
+  - [Prerequisites](#prerequisites)
   - [Project Configuration](#project-configuration)
   - [Routing](#routing)
     - [Route templates](#route-templates)
@@ -57,6 +58,15 @@ Samples and resources of how to design WebApi with .NET Core
   - [CQRS](#cqrs)
   - [OAuth](#oauth)
     - [Links](#links-9)
+
+## Prerequisites
+
+1. Install .NET Core SDK 3.1 from [link](https://dotnet.microsoft.com/download).
+2. Install one of IDEs:
+   - Visual Studio - [link](https://visualstudio.microsoft.com/downloads/) - for Windows only. Community edition is available for free,
+   - Visual Studio for Mac - [link](https://visualstudio.microsoft.com/downloads/) - for MacOS only. Available for free,
+   - Visual Studio Code- [link](https://visualstudio.microsoft.com/downloads/) with [C# plugin](https://marketplace.visualstudio.com/items?itemName=ms-dotnettools.csharp) - Cross-platform support. Available for free,
+   - Rider - [link](https://www.jetbrains.com/rider/download/) - cross-platform support. Paid, but there are available free options (for OpenSource, students, user groups etc.)
 
 ## Project Configuration
 
