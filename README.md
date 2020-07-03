@@ -37,19 +37,26 @@ Samples and resources of how to design WebApi with .NET Core
   - [CorrelationId](#correlationid)
       - [Links](#links-5)
   - [Docker](#docker)
+    - [Sample DOCKERFILE](#sample-dockerfile)
+    - [Debugging application inside Docker](#debugging-application-inside-docker)
+    - [Links](#links-6)
   - [CI/CD](#cicd)
-    - [Azure Pipelines](#azure-pipelines)
+    - [Azure DevOps Pipelines](#azure-devops-pipelines)
       - [Building and pushing image to Docker Registry](#building-and-pushing-image-to-docker-registry)
-      - [Links](#links-6)
+      - [Template for building and pushing Docker image](#template-for-building-and-pushing-docker-image)
+        - [Azure Docker Registry](#azure-docker-registry)
+        - [Docker Hub](#docker-hub)
+      - [Links](#links-7)
     - [Github Actions](#github-actions)
   - [Storage](#storage)
     - [EntityFramework](#entityframework)
     - [Dapper](#dapper)
   - [Caching](#caching)
   - [GraphQL](#graphql)
-    - [Links](#links-7)
+    - [Links](#links-8)
   - [CQRS](#cqrs)
   - [OAuth](#oauth)
+    - [Links](#links-9)
 
 ## Project Configuration
 
@@ -712,6 +719,8 @@ Microsoft provides docker images that can be used as a base for the Docker confi
 
 It's recommended to start with `alpine` as it's much smaller and use the regular if you need more advanced configuration that's lacking in alpine. There are also windows containers, but they're rarely used. For most of the cases linux based will be the first option to choose.
 
+### Sample DOCKERFILE
+
 See example of `DOCKERFILE`:
 
 ```dockerfile
@@ -768,14 +777,20 @@ ENV ASPNETCORE_URLS="http://*:5000"
 # sets entry point command to automatically 
 # run application on `docker run`
 ENTRYPOINT ["dotnet", "DockerContainerRegistry.dll"]
-
 ```
+### Debugging application inside Docker
+
+All modern IDE allows to debug ASP.NET Core application that are run inside the local docker. See links:
+
+- [Rider - Debugging ASP.NET Core apps in a local Docker container](https://blog.jetbrains.com/dotnet/2018/07/18/debugging-asp-net-core-apps-local-docker-container/)
+- [Visual Studio Code - ASP.NET Core in a container](https://code.visualstudio.com/docs/containers/quickstart-aspnet-core)
+- [Niranjan Singh - How to enable docker support ASP.NET applications in Visual Studio](https://dev.to/niranjankala/how-to-enable-docker-support-asp-net-applications-in-visual-studio-28p7)
+
 
 ### Links
 - [Download Docker](https://docs.docker.com/desktop/)
 - [Docker Hub](https://hub.docker.com)
 - [Microsoft Docker images](https://hub.docker.com/_/microsoft-dotnet-core-sdk)
-- [Visual Studio Code - ASP.NET Core in a container](https://code.visualstudio.com/docs/containers/quickstart-aspnet-core)
 - [Vladislav Supalov - Docker ARG, ENV and .env - a Complete Guide](https://vsupalov.com/docker-arg-env-variable-guide/)
 
 ## CI/CD
