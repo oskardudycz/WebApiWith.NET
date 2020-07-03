@@ -701,12 +701,80 @@ public IActionResult Update([FromBody] UpdateReservation request)
 
 ## Docker
 
+To setup docker configuration you need to create Dockerfile (usually it's located in the root project folder).
+
+Docker allows to define complete build and runtime setup. It allows also multistage build. Having that, you can use in first stage different tools for building the binaries. Then in the next stage you can just copy the prepared binaries and host them in the final image.
+Thank to that the final docker image is smaller and more secure as it doesn't contain eg. source codes and build tools.
+
+Microsoft provides docker images that can be used as a base for the Docker configuration. You can choose from various, but usually you're using either:
+- `mcr.microsoft.com/dotnet/core/sdk:3.1` - Debian based,
+- `mcr.microsoft.com/dotnet/core/sdk:3.1-alpine` - Alpine based, that are trimmed to have only basic tools preinstalled.
+
+It's recommended to start with `alpine` as it's much smaller and use the regular if you need more advanced configuration that's lacking in alpine. There are also windows containers, but they're rarely used. For most of the cases linux based will be the first option to choose.
+
+See example of `DOCKERFILE`:
+
+```dockerfile
+########################################
+#  First stage of multistage build
+########################################
+#  Use Build image with label `builder
+########################################
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS builder
+
+# Setup working directory for project
+WORKDIR /app
+
+# Copy project files
+COPY . ./
+
+# Restore nuget packages
+RUN dotnet restore
+
+# Build project with Release configuration
+# and no restore, as we did it already
+RUN dotnet build -c Release --no-restore
+
+## Test project with Release configuration
+## and no build, as we did it already
+#RUN dotnet test -c Release --no-build
+
+
+# Publish project to output folder
+# and no build, as we did it already
+RUN dotnet publish -c Release --no-build -o out
+
+########################################
+#  Second stage of multistage build
+########################################
+#  Use other build image as the final one
+#    that won't have source codes
+########################################
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine
+
+# Setup working directory for project
+WORKDIR /app
+
+# Copy published in previous stage binaries
+# from the `builder` image
+COPY --from=builder /app/out .
+
+# Set URL that App will be exposed
+ENV ASPNETCORE_URLS="http://*:5000"
+
+# sets entry point command to automatically 
+# run application on `docker run`
+ENTRYPOINT ["dotnet", "DockerContainerRegistry.dll"]
+```
+
 ### Links
-- [Microsoft Docker images - https://hub.docker.com/_/microsoft-dotnet-core-sdk]
+- [Download Docker](https://hub.docker.com)
+- [Docker Hub](https://hub.docker.com)
+- [Microsoft Docker images](https://hub.docker.com/_/microsoft-dotnet-core-sdk)
 
 ## CI/CD
 
-### Azure Pipelines
+### Azure DevOps Pipelines
 
 #### Building and pushing image to Docker Registry
 
@@ -836,6 +904,7 @@ stages:
 ```
 
 #### Links
+- [AzureDevOps documentation - Service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml)
 - [StackOverflow - Entity Framework Migrations in Azure Pipelines](https://stackoverflow.com/a/58430298)
 - [Azure DevOps Labs - Deploying a Docker based web application to Azure App Service](https://azuredevopslabs.com/labs/vstsextend/docker/)
 - [Chris Sainty - Deploying Containerised Apps to Azure Web App for Containers](https://chrissainty.com/containerising-blazor-applications-with-docker-deploying-containerised-apps-to-azure-web-app-for-containers/)
@@ -857,6 +926,7 @@ stages:
 
 ### Links
 - [Michael Staib - HotChocolate: An Introduction to GraphQL for ASP.NET Core](https://www.youtube.com/watch?v=Yy9wOhiWBJg)
+- [Michael Staib - Get started with GraphQL and Entity Framework](https://dev.to/michaelstaib/get-started-with-hot-chocolate-and-entity-framework-e9i)
 
 ## CQRS
 
