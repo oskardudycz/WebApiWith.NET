@@ -710,71 +710,32 @@ public IActionResult Update([FromBody] UpdateReservation request)
 
 #### Building and pushing image to Docker Registry
 
-Define DOCKER file with multiple stages to build the app image:
+#### Template for building and pushing Docker image
 
-```dockerfile
-# Build image
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS builder
-WORKDIR /app
-
-  # Copy files
-COPY . ./
-
-RUN dotnet restore
-RUN dotnet build -c Release --no-restore
-
-RUN dotnet publish -c Release --no-build -o out
-
-  # Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
-WORKDIR /app
-COPY --from=builder /app/out .
-ENV ASPNETCORE_URLS="http://*:5000"
-ENTRYPOINT ["dotnet", "DockerContainerRegistry.dll"]
-```
-
-Follow the steps from article:
-- https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/containers/acr-template?view=azure-devops
-
-Sample build definition:
+Setup the universal template as follows (with eg. filename `BuildAndPublishDocker.yml`):
 
 ```yaml
-trigger:
-  batch: true
-  branches:
-    include:
-      - master
+parameters:
 
-  paths:
-    include:
-      - CD/DockerContainerRegistry/*
-pr:
-  branches:
-    include:
-      - master
+  - name: imageRepository
 
-  paths:
-    include:
-      - CD/DockerContainerRegistry/*
-        
+  - name: dockerRegistryServiceConnection
+
+  - name: tag
+    type: string
+    
+  - name: vmImageName
+    default: 'ubuntu-16.04'
+    
+  - name: dockerfilePath
+    default: DOCKERFILE
+
 ######################################################
-#   Variables
+#   Stage definition
 ######################################################
-variables:
-  # image version (tag) variables
-  major: 1
-  minor: 0
-  patch: 0
-  build: $[counter(variables['minor'], 0)] #this will reset when we bump patch
-  tag: $(major).$(minor).$(patch).$(build)
-  vmImageName: 'ubuntu-16.04'
-  dockerfilePath: CD/DockerContainerRegistry/DOCKERFILE
-  imageRepository: WebApiWithNETCoreContainerRegistry
-  dockerRegistryServiceConnection: AzureDockerRegistryWebApiWithNetCore
-
 stages:
-  - stage: Build
-    displayName: Build and push stage
+  - stage: build_and_push_docker_image
+    displayName: Build and push Docker image
     jobs:
       - job: Build
         displayName: Build job
@@ -782,7 +743,7 @@ stages:
           vmImage: $(vmImageName)
         steps:
           - checkout: self
-          
+  
           - task: Docker@2
             displayName: Build a Docker image
             inputs:
@@ -804,7 +765,75 @@ stages:
               tags: |
                 $(tag)
 ```
+
+##### Azure Docker Registry
+
+Before running the pipeline, you need to manually using `Azure Cloud Shell`:
+1. Create Azure Resource Group, eg.:
+
+    `az group create --name WebApiWithNETCore --location westus`
+2. Create Azure Container Registry, eg.
+
+    `az acr create --resource-group WebApiWithNETCore --name dockercontainerregistrysample --sku Basic`
+3. Setup service connection in Azure Devops. See more in [documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/containers/acr-template?view=azure-devops)
+
+Use defined stage template and define needed variables, eg.: 
+
+```yaml
+variables:
+  # image version (tag) variables
+  major: 1
+  minor: 0
+  patch: 0
+  build: $[counter(variables['minor'], 0)] #this will reset when we bump patch
+  tag: $(major).$(minor).$(patch).$(build)
+  vmImageName: 'ubuntu-16.04'
+  dockerfilePath: CD/DockerContainerRegistry/DOCKERFILE
+  imageRepository: dockercontainerregistrysample
+  dockerRegistryServiceConnection: AzureDockerRegistry
+
+stages:
+  - template: AzureDevOps/Stages/BuildAndPublishDocker.yml
+    parameters:
+      imageRepository: imageRepository
+      dockerRegistryServiceConnection: dockerRegistryServiceConnection
+      tag: tag
+      vmImageName: vmImageName
+      dockerfilePath: dockerfilePath
+```
 See more in the pipeline definition: [link](https://dev.azure.com/oskardudycz/WebApiWithNetCore/_build?definitionId=5).
+
+##### Docker Hub
+
+Before running the pipeline, you need to manually using `Azure Cloud Shell`:
+1. Create an account and sign in to [Docker Hub](https://hub.docker.com).
+2. Create repository (this will be your image name) selecting your Git repository.
+3. Setup service connection in Azure Devops. See more in [documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#sep-docreg)
+
+Use defined stage template and define needed variables, eg.: 
+
+```yaml
+variables:
+  # image version (tag) variables
+  major: 1
+  minor: 0
+  patch: 0
+  build: $[counter(variables['minor'], 0)] #this will reset when we bump patch
+  tag: $(major).$(minor).$(patch).$(build)
+  vmImageName: 'ubuntu-16.04'
+  dockerfilePath: CD/DockerContainerRegistry/DOCKERFILE
+  imageRepository: dockercontainerregistrysample
+  dockerRegistryServiceConnection: DockerHubDockerRegistry
+
+stages:
+  - template: AzureDevOps/Stages/BuildAndPublishDocker.yml
+    parameters:
+      imageRepository: imageRepository
+      dockerRegistryServiceConnection: dockerRegistryServiceConnection
+      tag: tag
+      vmImageName: vmImageName
+      dockerfilePath: dockerfilePath
+```
 
 #### Links
 - [StackOverflow - Entity Framework Migrations in Azure Pipelines](https://stackoverflow.com/a/58430298)

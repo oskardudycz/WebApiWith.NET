@@ -31,7 +31,7 @@ variables:
   tag: $(major).$(minor).$(patch).$(build)
   vmImageName: 'ubuntu-16.04'
   dockerfilePath: CD/DockerContainerRegistry/DOCKERFILE
-  imageRepository: DockerContainerRegistrySample
+  imageRepository: dockercontainerregistrysample
   dockerRegistryServiceConnection: AzureDockerRegistry
 
 stages:
