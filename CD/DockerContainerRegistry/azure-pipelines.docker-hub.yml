@@ -37,8 +37,8 @@ variables:
 stages:
   - template: AzureDevOps/Stages/BuildAndPublishDocker.yml
     parameters:
-      imageRepository: imageRepository
-      dockerRegistryServiceConnection: dockerRegistryServiceConnection
-      tag: tag
-      vmImageName: vmImageName
-      dockerfilePath: dockerfilePath
+      imageRepository: $(imageRepository)
+      dockerRegistryServiceConnection: $(dockerRegistryServiceConnection)
+      tag: $(tag)
+      vmImageName: $(vmImageName)
+      dockerfilePath: $(dockerfilePath)

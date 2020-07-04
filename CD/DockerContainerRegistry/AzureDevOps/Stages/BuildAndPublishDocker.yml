@@ -23,7 +23,7 @@ stages:
       - job: Build
         displayName: Build job
         pool:
-          vmImage: $(vmImageName)
+          vmImage: ${{ parameters.vmImageName }}
         steps:
           - checkout: self
   
@@ -31,19 +31,19 @@ stages:
             displayName: Build a Docker image
             inputs:
               command: build
-              repository: $(imageRepository)
-              dockerfile: $(dockerfilePath)
-              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: ${{ parameters.imageRepository }}
+              dockerfile: ${{ parameters.dockerfilePath }}
+              containerRegistry: ${{ parameters.dockerRegistryServiceConnection }}
               tags: |
-                $(tag)
+                ${{ parameters.tag }}
   
           - task: Docker@2
             displayName: Push a Docker image to container registry
             condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
             inputs:
               command: push
-              repository: $(imageRepository)
-              dockerfile: $(dockerfilePath)
-              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: ${{ parameters.imageRepository }}
+              dockerfile: ${{ parameters.dockerfilePath }}
+              containerRegistry: ${{ parameters.dockerRegistryServiceConnection }}
               tags: |
-                $(tag)
+                ${{ parameters.tag }}

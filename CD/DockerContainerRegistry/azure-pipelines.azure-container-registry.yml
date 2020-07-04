@@ -35,10 +35,14 @@ variables:
   dockerRegistryServiceConnection: AzureDockerRegistry
 
 stages:
+  - template: AzureDevOps/Stages/CreateAzureGroupAndAzureDockerRegistry.yml
+    parameters:
+      imageRepository: $(imageRepository)
+      
   - template: AzureDevOps/Stages/BuildAndPublishDocker.yml
     parameters:
-      imageRepository: imageRepository
-      dockerRegistryServiceConnection: dockerRegistryServiceConnection
-      tag: tag
-      vmImageName: vmImageName
-      dockerfilePath: dockerfilePath
+      imageRepository: $(imageRepository)
+      dockerRegistryServiceConnection: $(dockerRegistryServiceConnection)
+      tag: $(tag)
+      vmImageName: $(vmImageName)
+      dockerfilePath: $(dockerfilePath)

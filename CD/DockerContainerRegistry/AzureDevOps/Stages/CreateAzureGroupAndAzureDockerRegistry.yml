@@ -1,0 +1,29 @@
+parameters:
+  name: ''
+  vmImageName: ''
+  displayName: ''
+  resourceGroupName: ''
+  imageRepository: ''
+  subscription: ''
+
+stages:
+  - stage: build_and_push_docker_image
+    displayName: Create Azure Group And Azure Docker Registry
+    jobs:
+      - job: ${{ parameters.name }}
+        pool:
+          vmImageName: ${{ parameters.vmImageName }}
+        steps:
+          - task: AzureCLI@1
+            displayName: ${{ parameters.displayName }}
+            inputs:
+              azureSubscription: ${{ parameters.subscription }}
+              scriptLocation: 'inlineScript'
+              inlineScript: az group create --name ${{ parameters.resourceGroupName }} --location northeurope
+
+          - task: AzureCLI@1
+            displayName: ${{ parameters.displayName }}
+            inputs:
+              azureSubscription: ${{ parameters.subscription }}
+              scriptLocation: 'inlineScript'
+              inlineScript: az acr create --resource-group ${{ parameters.resourceGroupName }} --name ${{ parameters.imageRepository }} -sku Basic
