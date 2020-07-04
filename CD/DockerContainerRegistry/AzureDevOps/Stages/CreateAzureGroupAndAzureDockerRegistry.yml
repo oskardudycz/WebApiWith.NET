@@ -7,7 +7,7 @@ parameters:
   subscription: ''
 
 stages:
-  - stage: build_and_push_docker_image
+  - stage: create_azure_group_and_azure_docker_registry
     displayName: Create Azure Group And Azure Docker Registry
     jobs:
       - job: ${{ parameters.name }}
