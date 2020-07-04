@@ -849,6 +849,32 @@ stages:
               inlineScript: az acr create --resource-group ${{ parameters.resourceGroupName }} --name ${{ parameters.imageRepository }} --sku Basic
 ```
 
+Sample usage of this template would look like:
+
+```yaml
+variables:
+  vmImageName: 'ubuntu-16.04'
+  imageRepository: dockercontainerregistrysample
+  dockerRegistryServiceConnection: AzureDockerRegistry
+  resourceGroupName: WebApiWithNetCore
+  subscription: AzureWebApiWithNetCore
+
+stages:
+  - template: AzureDevOps/Stages/CreateAzureGroupAndAzureDockerRegistry.yml
+    parameters:
+      imageRepository: $(imageRepository)
+      resourceGroupName: $(resourceGroupName)
+      subscription: $(subscription)
+      vmImageName: $(vmImageName)
+```
+
+**Links:**
+- [Microsoft Documentation - How to: Use the portal to create an Azure AD application and service principal that can access resources](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal)
+- [Alessandro Moura - Creating a service connection in Azure DevOps](http://www.alessandromoura.com.br/2020/04/17/creating-a-service-credential-in-azure-devops/)
+- [Barbara 4Bes - Step by step: Manually Create an Azure DevOps Service Connection to Azure](https://4bes.nl/2019/07/11/step-by-step-manually-create-an-azure-devops-service-connection-to-azure/)
+- [Microsoft Documentation - Azure CLI Task](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-cli?view=azure-devops)
+- [Microsoft Documentation - Service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-new)
+
 #### Building and pushing image to Docker Registry
 
 ##### Template for building and pushing Docker image
@@ -881,7 +907,7 @@ stages:
       - job: Build
         displayName: Build job
         pool:
-          vmImage: $(vmImageName)
+          vmImage: ${{ parameters.vmImageName }}
         steps:
           - checkout: self
   
@@ -889,22 +915,22 @@ stages:
             displayName: Build a Docker image
             inputs:
               command: build
-              repository: $(imageRepository)
-              dockerfile: $(dockerfilePath)
-              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: ${{ parameters.imageRepository }}
+              dockerfile: ${{ parameters.dockerfilePath }}
+              containerRegistry: ${{ parameters.dockerRegistryServiceConnection }}
               tags: |
-                $(tag)
+                ${{ parameters.tag }}
   
           - task: Docker@2
             displayName: Push a Docker image to container registry
             condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
             inputs:
               command: push
-              repository: $(imageRepository)
-              dockerfile: $(dockerfilePath)
-              containerRegistry: $(dockerRegistryServiceConnection)
+              repository: ${{ parameters.imageRepository }}
+              dockerfile: ${{ parameters.dockerfilePath }}
+              containerRegistry: ${{ parameters.dockerRegistryServiceConnection }}
               tags: |
-                $(tag)
+                ${{ parameters.tag }}
 ```
 
 ##### Azure Docker Registry
