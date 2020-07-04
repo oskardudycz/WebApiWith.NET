@@ -43,8 +43,9 @@ Samples and resources of how to design WebApi with .NET Core
     - [Links](#links-6)
   - [CI/CD](#cicd)
     - [Azure DevOps Pipelines](#azure-devops-pipelines)
+      - [Setting up Docker Resources](#setting-up-docker-resources)
       - [Building and pushing image to Docker Registry](#building-and-pushing-image-to-docker-registry)
-      - [Template for building and pushing Docker image](#template-for-building-and-pushing-docker-image)
+        - [Template for building and pushing Docker image](#template-for-building-and-pushing-docker-image)
         - [Azure Docker Registry](#azure-docker-registry)
         - [Docker Hub](#docker-hub)
       - [Links](#links-7)
@@ -807,9 +808,50 @@ All modern IDE allows to debug ASP.NET Core application that are run inside the 
 
 ### Azure DevOps Pipelines
 
+#### Setting up Docker Resources
+
+Azure Devops has built in `AzureCLI@1` task that's able to run [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) commands.
+
+To use it, it's needed to configure [Azure Resource Manager comnnection](https://4bes.nl/2019/07/11/step-by-step-manually-create-an-azure-devops-service-connection-to-azure/). It's possible to do either with default service principal or by setting up custom one with set of permissions.
+
+To allow new resource group creation you need to add at least `Microsoft.Resources/subscriptions/resourcegroups/write` permission on the subscription level. You can do that through `Access Control (IAM)` section (Home => Subscriptions => Select subscription => IAM). 
+Then you need to assign role that has that permission (eg. `Contributor` but beware - using it might be dangerous, as it has a high level access permissions, someone with access to Azure Devops can get access to subscription management). You can define your own custom role with minimum set of permissions.
+
+Sample usage would be, creating new resource group and Azure Container Registry:
+
+```yaml
+parameters:
+  vmImageName: 'ubuntu-16.04'
+  resourceGroupName: ''
+  imageRepository: ''
+  subscription: ''
+
+stages:
+  - stage: create_azure_group_and_azure_docker_registry
+    displayName: Create Azure Group And Azure Docker Registry
+    jobs:
+      - job: create_azure_group_and_azure_docker_registry
+        pool:
+          vmImageName: ${{ parameters.vmImageName }}
+        steps:
+          - task: AzureCLI@1
+            displayName: Create Resource Group
+            inputs:
+              azureSubscription: ${{ parameters.subscription }}
+              scriptLocation: 'inlineScript'
+              inlineScript: az group create --name ${{ parameters.resourceGroupName }} --location northeurope
+
+          - task: AzureCLI@1
+            displayName: Create Azure Container Registry
+            inputs:
+              azureSubscription: ${{ parameters.subscription }}
+              scriptLocation: 'inlineScript'
+              inlineScript: az acr create --resource-group ${{ parameters.resourceGroupName }} --name ${{ parameters.imageRepository }} --sku Basic
+```
+
 #### Building and pushing image to Docker Registry
 
-#### Template for building and pushing Docker image
+##### Template for building and pushing Docker image
 
 Setup the universal template as follows (with eg. filename `BuildAndPublishDocker.yml`):
 

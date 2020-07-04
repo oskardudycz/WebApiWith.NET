@@ -1,7 +1,5 @@
 parameters:
-  name: ''
-  vmImageName: ''
-  displayName: ''
+  vmImageName: 'ubuntu-16.04'
   resourceGroupName: ''
   imageRepository: ''
   subscription: ''
@@ -10,20 +8,20 @@ stages:
   - stage: create_azure_group_and_azure_docker_registry
     displayName: Create Azure Group And Azure Docker Registry
     jobs:
-      - job: ${{ parameters.name }}
+      - job: create_azure_group_and_azure_docker_registry
         pool:
           vmImageName: ${{ parameters.vmImageName }}
         steps:
           - task: AzureCLI@1
-            displayName: ${{ parameters.displayName }}
+            displayName: Create Resource Group
             inputs:
               azureSubscription: ${{ parameters.subscription }}
               scriptLocation: 'inlineScript'
               inlineScript: az group create --name ${{ parameters.resourceGroupName }} --location northeurope
 
           - task: AzureCLI@1
-            displayName: ${{ parameters.displayName }}
+            displayName: Create Azure Container Registry
             inputs:
               azureSubscription: ${{ parameters.subscription }}
               scriptLocation: 'inlineScript'
-              inlineScript: az acr create --resource-group ${{ parameters.resourceGroupName }} --name ${{ parameters.imageRepository }} -sku Basic
+              inlineScript: az acr create --resource-group ${{ parameters.resourceGroupName }} --name ${{ parameters.imageRepository }} --sku Basic

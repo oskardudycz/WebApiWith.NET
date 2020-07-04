@@ -33,11 +33,16 @@ variables:
   dockerfilePath: CD/DockerContainerRegistry/DOCKERFILE
   imageRepository: dockercontainerregistrysample
   dockerRegistryServiceConnection: AzureDockerRegistry
+  resourceGroupName: WebApiWithNetCore
+  subscription: AzureWebApiWithNetCore
 
 stages:
   - template: AzureDevOps/Stages/CreateAzureGroupAndAzureDockerRegistry.yml
     parameters:
       imageRepository: $(imageRepository)
+      resourceGroupName: $(resourceGroupName)
+      subscription: $(subscription)
+      vmImageName: $(vmImageName)
       
   - template: AzureDevOps/Stages/BuildAndPublishDocker.yml
     parameters:
