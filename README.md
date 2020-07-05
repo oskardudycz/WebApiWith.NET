@@ -41,6 +41,15 @@ Samples and resources of how to design WebApi with .NET Core
     - [Sample DOCKERFILE](#sample-dockerfile)
     - [Debugging application inside Docker](#debugging-application-inside-docker)
     - [Links](#links-6)
+  - [Storage](#storage)
+    - [EntityFramework](#entityframework)
+    - [Dapper](#dapper)
+  - [Azure](#azure)
+    - [App Services](#app-services)
+      - [Links](#links-7)
+    - [Azure ARM Templates](#azure-arm-templates)
+      - [Links](#links-8)
+  - [AWS](#aws)
   - [CI/CD](#cicd)
     - [Azure DevOps Pipelines](#azure-devops-pipelines)
       - [Setting up Docker Resources](#setting-up-docker-resources)
@@ -48,17 +57,16 @@ Samples and resources of how to design WebApi with .NET Core
         - [Template for building and pushing Docker image](#template-for-building-and-pushing-docker-image)
         - [Azure Docker Registry](#azure-docker-registry)
         - [Docker Hub](#docker-hub)
-      - [Links](#links-7)
+      - [Publishing application to App Services](#publishing-application-to-app-services)
+        - [Links](#links-9)
+      - [Links](#links-10)
     - [Github Actions](#github-actions)
-  - [Storage](#storage)
-    - [EntityFramework](#entityframework)
-    - [Dapper](#dapper)
   - [Caching](#caching)
   - [GraphQL](#graphql)
-    - [Links](#links-8)
+    - [Links](#links-11)
   - [CQRS](#cqrs)
   - [OAuth](#oauth)
-    - [Links](#links-9)
+    - [Links](#links-12)
 
 ## Prerequisites
 
@@ -804,6 +812,31 @@ All modern IDE allows to debug ASP.NET Core application that are run inside the 
 - [Microsoft Docker images](https://hub.docker.com/_/microsoft-dotnet-core-sdk)
 - [Vladislav Supalov - Docker ARG, ENV and .env - a Complete Guide](https://vsupalov.com/docker-arg-env-variable-guide/)
 
+## Storage
+
+### EntityFramework
+
+### Dapper
+
+## Azure
+
+### App Services
+
+#### Links
+- [Microsoft Documentation - Azure CLI - Containers](https://docs.microsoft.com/en-us/cli/azure/group/deployment?view=azure-cli-latest)
+
+### Azure ARM Templates
+
+#### Links
+- [Microsoft Documentation - ARM Templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview)
+- [Microsoft Github - Learning ARM](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-deploy-what-if?tabs=azure-powershell)
+- [Microsoft Documentation - Azure CLI - ARM Deployments](https://docs.microsoft.com/en-us/cli/azure/group/deployment?view=azure-cli-latest)
+- [Microsoft Documentation - Tutorial: Build a custom image and run in App Service from a private registry](https://docs.microsoft.com/en-us/azure/app-service/containers/tutorial-custom-docker-image#download-the-sample)
+- [Microsoft Documentation - What if deployment](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-deploy-what-if?tabs=azure-powershell)
+- [Microsoft Documentation - ARM Templates Reference](https://docs.microsoft.com/en-us/azure/templates/)
+
+## AWS
+
 ## CI/CD
 
 ### Azure DevOps Pipelines
@@ -970,6 +1003,9 @@ stages:
 ```
 See more in the pipeline definition: [link](https://dev.azure.com/oskardudycz/WebApiWithNetCore/_build?definitionId=5).
 
+**Links:**
+- [Microsoft Documentation - Azure Container Registry Authentication](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-authentication)
+
 ##### Docker Hub
 
 Before running the pipeline, you need to manually using `Azure Cloud Shell`:
@@ -1002,6 +1038,12 @@ stages:
       dockerfilePath: dockerfilePath
 ```
 
+#### Publishing application to App Services
+
+##### Links
+- [Microsof Documentation - Quickstart: Use an Azure Resource Manager template to deploy a Linux web app to Azure](https://docs.microsoft.com/en-us/azure/devops/pipelines/apps/cd/azure/deploy-arm-template?view=azure-devops)
+- [Microsoft Documentation - Azure Resource Group Deployment Task](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/deploy/azure-resource-group-deployment?view=azure-devops)
+
 #### Links
 - [AzureDevOps documentation - Service connections](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml)
 - [StackOverflow - Entity Framework Migrations in Azure Pipelines](https://stackoverflow.com/a/58430298)
@@ -1013,11 +1055,6 @@ stages:
 ### Github Actions
 - [Barbara 4bes - Step by step: Test and deploy ARM Templates with GitHub Actions](https://4bes.nl/2020/06/28/step-by-step-test-and-deploy-arm-templates-with-github-actions/amp/)
 
-## Storage
-
-### EntityFramework
-
-### Dapper
 
 ## Caching
 
