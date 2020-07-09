@@ -6,7 +6,7 @@
             "value": "Standard_LRS"
         },
         "storageName": {
-            "value": "webapiwith"
+            "value": "WebApiWith"
         }
     }
 }
