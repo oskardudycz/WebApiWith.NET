@@ -1,6 +1,6 @@
 parameters:
   vmImageName: 'ubuntu-16.04'
-  resourceGroupName: 'WebApiWithNetCoreArmTest'
+  resourceGroupName: ''
   imageRepository: ''
   subscription: ''
   templateFile: ''
@@ -19,7 +19,7 @@ stages:
             inputs:
               azureSubscription: ${{ parameters.subscription }}
               scriptLocation: 'inlineScript'
-              inlineScript: az group deployment create -g ${{ parameters.resourceGroupName }} --template-file ${{ parameters.templateFile }}  --parameters ${{ parameters.parametersFile }}
+              inlineScript: az deployment group create -g ${{ parameters.resourceGroupName }} --template-file ${{ parameters.templateFile }}  --parameters ${{ parameters.parametersFile }}
 #
 #          - task: AzureCLI@1
 #            displayName: Delete Azure Group

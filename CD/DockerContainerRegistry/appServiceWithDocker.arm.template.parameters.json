@@ -6,7 +6,7 @@
             "value": "Standard_LRS"
         },
         "storageName": {
-            "value": "Web Api with .NET Core"
+            "value": "webapiwith"
         }
     }
 }
