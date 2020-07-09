@@ -1,6 +1,6 @@
 parameters:
   vmImageName: 'ubuntu-16.04'
-  resourceGroupName: ''
+  resourceGroupName: 'WebApiWithNetCoreArmTest'
   imageRepository: ''
   subscription: ''
   templateFile: ''
@@ -15,8 +15,15 @@ stages:
           vmImageName: ${{ parameters.vmImageName }}
         steps:
           - task: AzureCLI@1
-            displayName: Create Azure Container Registry
+            displayName: Create Azure Resource Group from template
             inputs:
               azureSubscription: ${{ parameters.subscription }}
               scriptLocation: 'inlineScript'
-              inlineScript: az group deployment create -g ${{ parameters.resourceGroupName }} --template-file ${{ templateFile }}  --parameters ${{ parametersFile }}
+              inlineScript: az group deployment create -g ${{ parameters.resourceGroupName }} --template-file ${{ parameters.templateFile }}  --parameters ${{ parameters.parametersFile }}
+#
+#          - task: AzureCLI@1
+#            displayName: Delete Azure Group
+#            inputs:
+#              azureSubscription: ${{ parameters.subscription }}
+#              scriptLocation: 'inlineScript'
+#              inlineScript: az group deployment delete -g ${{ parameters.resourceGroupName }}

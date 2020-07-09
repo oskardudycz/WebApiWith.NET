@@ -35,6 +35,8 @@ variables:
   dockerRegistryServiceConnection: AzureDockerRegistry
   resourceGroupName: WebApiWithNetCore
   subscription: AzureWebApiWithNetCore
+  templateFile: appServiceWithDocker.arm.template.json
+  parametersFile: appServiceWithDocker.arm.template.parameters.json
 
 stages:
   - template: AzureDevOps/Stages/CreateAzureGroupAndAzureDockerRegistry.yml
@@ -55,9 +57,7 @@ stages:
   - template: AzureDevOps/Stages/CreateAzureGroupFromTemplate.yml
     parameters:
       imageRepository: $(imageRepository)
-      dockerRegistryServiceConnection: $(dockerRegistryServiceConnection)
-      tag: $(tag)
+      subscription: $(subscription)
       vmImageName: $(vmImageName)
-      dockerfilePath: $(dockerfilePath)
-      templateFile: appServiceWithDocker.arm.template.json
-      parametersFile: appServiceWithDocker.arm.template.parameters.json
+      templateFile: $(templateFile)
+      parametersFile: $(parametersFile)
