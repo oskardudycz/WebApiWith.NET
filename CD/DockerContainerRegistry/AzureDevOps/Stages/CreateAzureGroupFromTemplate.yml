@@ -1,0 +1,22 @@
+parameters:
+  vmImageName: 'ubuntu-16.04'
+  resourceGroupName: ''
+  imageRepository: ''
+  subscription: ''
+  templateFile: ''
+  parametersFile: ''
+
+stages:
+  - stage: create_azure_group_from_template
+    displayName: Create Azure Group From Template
+    jobs:
+      - job: create_azure_group_from_template
+        pool:
+          vmImageName: ${{ parameters.vmImageName }}
+        steps:
+          - task: AzureCLI@1
+            displayName: Create Azure Container Registry
+            inputs:
+              azureSubscription: ${{ parameters.subscription }}
+              scriptLocation: 'inlineScript'
+              inlineScript: az group deployment create -g ${{ parameters.resourceGroupName }} --template-file ${{ templateFile }}  --parameters ${{ parametersFile }}

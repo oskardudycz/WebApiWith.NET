@@ -49,6 +49,8 @@ Samples and resources of how to design WebApi with .NET Core
       - [Links](#links-7)
     - [Azure ARM Templates](#azure-arm-templates)
       - [Links](#links-8)
+    - [Azure Key Vault](#azure-key-vault)
+      - [Links](#links-9)
   - [AWS](#aws)
   - [CI/CD](#cicd)
     - [Azure DevOps Pipelines](#azure-devops-pipelines)
@@ -58,15 +60,15 @@ Samples and resources of how to design WebApi with .NET Core
         - [Azure Docker Registry](#azure-docker-registry)
         - [Docker Hub](#docker-hub)
       - [Publishing application to App Services](#publishing-application-to-app-services)
-        - [Links](#links-9)
-      - [Links](#links-10)
+        - [Links](#links-10)
+      - [Links](#links-11)
     - [Github Actions](#github-actions)
   - [Caching](#caching)
   - [GraphQL](#graphql)
-    - [Links](#links-11)
+    - [Links](#links-12)
   - [CQRS](#cqrs)
   - [OAuth](#oauth)
-    - [Links](#links-12)
+    - [Links](#links-13)
 
 ## Prerequisites
 
@@ -834,6 +836,12 @@ All modern IDE allows to debug ASP.NET Core application that are run inside the 
 - [Microsoft Documentation - Tutorial: Build a custom image and run in App Service from a private registry](https://docs.microsoft.com/en-us/azure/app-service/containers/tutorial-custom-docker-image#download-the-sample)
 - [Microsoft Documentation - What if deployment](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/template-deploy-what-if?tabs=azure-powershell)
 - [Microsoft Documentation - ARM Templates Reference](https://docs.microsoft.com/en-us/azure/templates/)
+
+### Azure Key Vault
+
+#### Links
+- [Microsoft Documentation - Quickstart: Set and retrieve a secret from Azure Key Vault using Azure CLI](https://docs.microsoft.com/en-us/azure/key-vault/secrets/quick-create-cli)
+- [Microsoft Documentation - Use Azure Key Vault to pass secure parameter value during deployment](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/key-vault-parameter?tabs=azure-cli)
 
 ## AWS
 

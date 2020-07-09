@@ -51,3 +51,13 @@ stages:
       tag: $(tag)
       vmImageName: $(vmImageName)
       dockerfilePath: $(dockerfilePath)
+
+  - template: AzureDevOps/Stages/CreateAzureGroupFromTemplate.yml
+    parameters:
+      imageRepository: $(imageRepository)
+      dockerRegistryServiceConnection: $(dockerRegistryServiceConnection)
+      tag: $(tag)
+      vmImageName: $(vmImageName)
+      dockerfilePath: $(dockerfilePath)
+      templateFile: appServiceWithDocker.arm.template.json
+      parametersFile: appServiceWithDocker.arm.template.parameters.json
