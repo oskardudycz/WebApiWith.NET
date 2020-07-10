@@ -20,25 +20,51 @@
             "type": "string",
             "maxLength": 10,
             "metadata": {
-                "description": "Name of the storag account."
+                "description": "Name of the storage account."
+            }
+        },
+        "environment": {
+            "type": "string",
+            "allowedValues": [
+                "DEV",
+                "PROD"
+            ],
+            "defaultValue": "DEV",
+            "metadata": {
+                "description": "Define the type of environment and resource to deploy. "
             }
         }
     },
     "functions": [],
-    "variables": {},
+    "variables": {
+        "suffix": "[uniqueString(resourceGroup().id)]",
+        "primeStorageName": "[toLower(concat(parameters('storageName'), variables('suffix')))]",
+        "storageInfo": {
+            "DEV": {
+                "storageSKU": "Standard_LRS",
+                "storageTier": "Standard"
+            },
+            "PROD": {
+                "storageSKU": "Premium_LRS",
+                "storageTier": "Premium"
+            }
+        },
+        "storageSKU": "[variables('storageInfo')[parameters('environment')].storageSKU]",
+        "storageTier": "[variables('storageInfo')[parameters('environment')].storageTier]"
+    },
     "resources": [
         {
-            "name": "[concat(substring(toLower(parameters('storageName')), 0, 5), uniqueString(resourceGroup().id))]",
+            "name": "[variables('primeStorageName')]",
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "tags": {
-                "displayName": "testStorage"
+                "displayName": "[variables('primeStorageName')]"
             },
             "location": "[resourceGroup().location]",
             "kind": "StorageV2",
             "sku": {
-                "name": "[parameters('storageSKU')]",
-                "tier": "Premium"
+                "name": "[variables('storageSKU')]",
+                "tier": "[variables('storageTier')]"
             },
             "properties": {
                 "supportsHttpsTrafficOnly": true
