@@ -1,0 +1,19 @@
+parameters:
+  vmImageName: 'ubuntu-16.04'
+  resourceGroupName: ''
+  subscription: ''
+
+stages:
+  - stage: delete_azure_group
+    displayName: Delete Azure Group
+    jobs:
+      - job: delete_azure_group
+        pool:
+          vmImageName: ${{ parameters.vmImageName }}
+        steps:
+          - task: AzureCLI@1
+            displayName: Delete Resource Group
+            inputs:
+              azureSubscription: ${{ parameters.subscription }}
+              scriptLocation: 'inlineScript'
+              inlineScript: az group delete --name ${{ parameters.resourceGroupName }} --yes

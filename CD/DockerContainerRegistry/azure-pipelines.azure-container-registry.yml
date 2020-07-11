@@ -62,3 +62,10 @@ stages:
       templateFile: $(templateFile)
       parametersFile: $(parametersFile)
       resourceGroupName: $(resourceGroupName)
+      
+
+  - template: AzureDevOps/Stages/DeleteAzureGroup.yml
+    parameters:
+      subscription: $(subscription)
+      vmImageName: $(vmImageName)
+      resourceGroupName: $(resourceGroupName)
