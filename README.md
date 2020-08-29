@@ -1,8 +1,11 @@
+![Twitter Follow](https://img.shields.io/twitter/follow/oskar_at_net?style=social) 
+
 # WebApi with .NET Core
 
 Samples and resources of how to design WebApi with .NET Core
 
 - [WebApi with .NET Core](#webapi-with-net-core)
+  - [Support](#support)
   - [Prerequisites](#prerequisites)
   - [Project Configuration](#project-configuration)
   - [Routing](#routing)
@@ -69,6 +72,14 @@ Samples and resources of how to design WebApi with .NET Core
   - [CQRS](#cqrs)
   - [OAuth](#oauth)
     - [Links](#links-13)
+
+## Support
+
+Feel free to [create an issue](https://github.com/oskardudycz/EventSourcing.NetCore/issues/new) if you have any questions or request for more explanation or samples. I also take **Pull Requests**!
+
+💖 If this repository helped you - I'd be more than happy if you **join** the group of **my official supporters** at:
+
+👉 [Github Sponsors](https://github.com/sponsors/oskardudycz) 
 
 ## Prerequisites
 
