@@ -39,7 +39,7 @@ stages:
   
           - task: Docker@2
             displayName: Push a Docker image to container registry
-            condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+            condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
             inputs:
               command: push
               repository: ${{ parameters.imageRepository }}
