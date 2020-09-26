@@ -62,6 +62,7 @@
             "name": "WebApiNetCoreWebApp",
             "type": "Microsoft.Web/sites",
             "apiVersion": "2018-11-01",
+            "kind": "app,linux,container",
             "location": "[resourceGroup().location]",
             "tags": {
                 "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/WebApiNetCoreSP')]": "Resource",
