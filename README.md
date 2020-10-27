@@ -464,7 +464,132 @@ public class UserReservationsController : ControllerBase
 
 ## REST
 
-## API Versioning
+Let's go back in time. In 2000 Roy Fielding wrote doctoral dissertation titled "Architectural Styles and the Design of Network-based Software Architectures". This dissertation gave rise to "REpresentational State Transfer" - REST. Roy created REST as an architectural style based on the principles that make the Internet so successful. The World Wide Web runs itself on HTTP, which has a number of conventions that provide the basis for scalability, fault tolerance, and loose coupling. REST and HTTP are not the same thing, but REST fully embraces HTTP. It means that it uses verbs, status codes, headers, and resource identified as URI in order to fulfill the constraints that together compose the so-called RESTful style. What are those constraints?
+
+### The Six Contraints of REST 
+
+REST, like any other architectural style, describes constraints, that composed together define the basis of RESTful style.
+
+#### Client-server
+This constraint just mainly specifies that there's a distinction between a client and a server. This separation allows the components to evolve independently thus improving portability and scalability.
+
+#### Stateless 
+Each request must have all the information necessary for its correct completion. It means that all the state that's contained for a given web request is contained within the request itself as a part of the URI, query string parameters, body, or headers. Since there is no session related dependency, each server can handle any request thus API can be easily scaled. Removing all server-side state synchronization logic also makes REST APIs less complex.
+
+#### Cacheable
+The server should label what data within a response to a request can be cached and what cannot. If a response can be cached, then a client cache is given the rights to reuse that response data for later, equivalent requests. Following this constraint give the potential to partially or completely eliminate some interactions, thus improving performance and scalability and also decrease latency.
+
+#### Layered System
+The client can make a request and the response could come from a web server, a load balancer, a cache, etc. For the client, it doesn't really matter where the data is coming from as long as it gets the requested information. In other words, before the server completes the response, it can perform additional operations that the client does not need to know.
+
+#### Code on demand
+This is the only optional constraint. Most of the time, the server will be sending the static representations of resources in the form of XML or JSON, but on demand, it can send additional code (f.e. javascript) that can be executed on the client side. This simplifies clients by reducing the number of features required to be pre-implemented.
+
+#### Uniform interface
+The server should provide an API that will be well understood by all applications communicating with it. By designing one interface, we should respond to the needs of all applications that use it. In order to obtain such a uniform interface, four additional constraints must be met.
+
+##### Identification of resources
+On the basis of a single request, the server can identify the resource it concerns. For that purpose most often the Uniform Resource Identifier - URI is used. It distinguishes resource from any other, and through it interaction with that resource take place.
+In the example we have address that is pointing on specific employee with id 123.
+This address is the URI, which is *identifier* and the returned employee is the *resource*.
+```http
+GET http://example.org/employees/123
+```
+```http
+200 OK
+{
+  "employeeId": 123,
+  "firstName": "John",
+  "lastName": "Doe"
+}
+```
+
+##### Manipulation of resources through representations
+The server can return reponse in various formats (media types) like HTML, XML, JSON etc. That format is the *representation* of the identified resource, that the client can understand and manipulate. It is possible for the client to request a specific representation that fits it needs. This is accomplished via the Accept header.
+```http
+GET http://example.org/employees/123
+Accept: application/xml
+```
+```http
+200 OK
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+    <employeeId type="integer">123</employeeId>
+    <firstName>John</firstName>
+    <lastName>Doe</lastName>
+</employee>
+```
+Clients are also allowed to indicate their preferred representation when sending data to the server. This is accomplished via the Content-type header. The server response should not be affected by the choosen format.
+```http
+POST http://example.org/employees
+Content-type: application/json
+{
+  "firstName": "John",
+  "lastName": "Doe"
+}
+```
+```http
+201 Created
+Location: http://example.org/employees/123
+```
+
+##### Self-descriptive messages
+A *message*, which is a request or a response, is being considered as *self-descriptive* when it contains all the information necessary to complete the task. In other words it should contains all the information that the recipient needs to understand it.
+Down bellow is an example of self-descriptive message. It contains information about protocol, host, which type of action need to be performed (HTTP method), and desired resource representation to be returned (Accept header). Such a message will be well understood by the server.
+```http
+GET /employees/123 HTTP/1.1
+Host: example.org
+Accept: application/json
+```
+The server can respond accordingly. That *message* is also *self-descriptive*. It tells the client that operation was sucessfull by returning appriopriate status code. It also tells how to interpret the message body by specyfing Content-Type header.
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+{
+  "employeeId": 123,
+  "firstName": "John",
+  "lastName": "Doe"
+}
+```
+
+##### Hypermedia as the engine of application state (HATEOAS)
+Together, the first three uniform interface constraints imply the fourth. It can be summarise as that: sending *self-desciptive messages* to *uniquely identifying resources*, using *representations*, changes the *state of the application*.
+This constraint allows to compare the RESTful API to a website. As a website is a collection of links leading to subsequent subpages, HATEOAS informs that the same can be done with API. Also think of it as an situation in the office when you want to start a new business. You can't just go there and "POST" a new company. You must submit an application for creating a new company and then you will receive anwser like "Thank you for submitting an aplication. Here are the next possible steps that you can perform: cancellation of the application, address change, financing".
+```http
+POST http://example.org/companies
+{
+  "name": "NewOne",
+  "address": "Example 5",
+  "owner": {
+    "firstName": "John",
+    "lastName": "Doe"
+  }
+}
+```
+```http
+HTTP/1.1 201 Created
+{
+  "companyId": 1234,
+  "name": "NewOne",
+  "address": "Example 5",
+  "owner": {
+    "firstName": "John",
+    "lastName": "Doe"
+  },
+  "_links":{
+    "self":{
+      "href": "http://example.org/companies/1234",
+      "method": "GET"
+    },
+    "cancellation":{
+      "href": "http://example.org/companies/1234",
+      "method": "DELETE"
+    }
+  }
+}
+```
+
+## API Versioning 
 
 ## Filters
 
