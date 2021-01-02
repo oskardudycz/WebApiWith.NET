@@ -1,0 +1,43 @@
+name: Build And Publish Docker To DockerHub
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Out Repo
+        uses: actions/checkout@v1
+
+      - name: Test var
+        run: echo ${{ github.ref == 'refs/heads/main'}}
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          # Use secrets defined in GithubRepository
+          # Based on the generated in DockerHub token
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          # build image in pull requests
+          # publish only if branch is `main`
+          push: ${{ github.ref == 'refs/heads/main'}}
+          # define at which tag should be docker image published
+          tags: oskardudycz/webapi_net_core_github_actions:latest
+          # path to your project subfolder
+          context: ./CD/DockerContainerRegistry
+          # path to Dockerfile
+          file: ./CD/DockerContainerRegistry/DOCKERFILE
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

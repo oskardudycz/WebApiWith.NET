@@ -26,6 +26,10 @@ Samples and resources of how to design WebApi with .NET
       - [Layered System](#layered-system)
       - [Code on demand](#code-on-demand)
       - [Uniform interface](#uniform-interface)
+        - [Identification of resources](#identification-of-resources)
+        - [Manipulation of resources through representations](#manipulation-of-resources-through-representations)
+        - [Self-descriptive messages](#self-descriptive-messages)
+        - [Hypermedia as the engine of application state (HATEOAS)](#hypermedia-as-the-engine-of-application-state-hateoas)
   - [API Versioning](#api-versioning)
   - [Filters](#filters)
   - [Middleware](#middleware)
@@ -73,12 +77,15 @@ Samples and resources of how to design WebApi with .NET
         - [Links](#links-10)
       - [Links](#links-11)
     - [Github Actions](#github-actions)
+      - [Building and pushing image to Docker Registry](#building-and-pushing-image-to-docker-registry-1)
+        - [Docker Hub](#docker-hub-1)
+          - [Links](#links-12)
   - [Caching](#caching)
   - [GraphQL](#graphql)
-    - [Links](#links-12)
+    - [Links](#links-13)
   - [CQRS](#cqrs)
   - [OAuth](#oauth)
-    - [Links](#links-13)
+    - [Links](#links-14)
 
 ## Support
 
@@ -1205,6 +1212,71 @@ stages:
 
 ### Github Actions
 - [Barbara 4bes - Step by step: Test and deploy ARM Templates with GitHub Actions](https://4bes.nl/2020/06/28/step-by-step-test-and-deploy-arm-templates-with-github-actions/amp/)
+
+#### Building and pushing image to Docker Registry
+
+##### Docker Hub
+
+Before running the pipeline:
+1. Create an account and sign in to [Docker Hub](https://hub.docker.com).
+2. Go to Account Settings => Security: [link](https://hub.docker.com/settings/security) and click **New Access Token**.
+3. Provide the name of your access token, save it and copy the value (you won't be able to see it again, you'll need to regenerate it).
+4. Go to your GitHub secrets settings (Settings => Secrets, url `https://github.com/{your_username}/{your_repository_name}/settings/secrets/actions`).
+5. Create two secrets (they won't be visible for other users and will be used in the )
+- `DOCKERHUB_USERNAME` - with the name of your Docker Hub account (do not mistake it with GitHub account)
+- `DOCKERHUB_TOKEN` - with the pasted value of a token generated in point 3.
+
+Then add new file in the `.github/workflows` repository folder - e.g. [build_and_publish_docker_to_docker_hub.yml](/workflows/build_and_publish_docker_to_docker_hub.yml).
+
+```yaml
+name: Build And Publish Docker To DockerHub
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Out Repo
+        uses: actions/checkout@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          # Use secrets defined in GithubRepository
+          # Based on the generated in DockerHub token
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          # build image in pull requests
+          # publish only if branch is `main`
+          push: ${{ github.ref == 'refs/heads/main'}}
+          # define at which tag should be docker image published
+          tags: oskardudycz/webapi_net_core_github_actions:latest
+          # path to your project subfolder
+          context: ./CD/DockerContainerRegistry
+          # path to Dockerfile
+          file: ./CD/DockerContainerRegistry/DOCKERFILE
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
+
+```
+
+###### Links
+- [Docker - Configure GitHub Actions](https://docs.docker.com/ci-cd/github-actions/)
+- [Docker Blog - Ben De St Paer-Gotch - Docker Github Actions](https://www.docker.com/blog/docker-github-actions/)
+- [GitHub - Publishing Docker images](https://docs.github.com/en/free-pro-team@latest/actions/guides/publishing-docker-images)
+- [GitHub Actions MarketPlace - Build and push Docker images](https://github.com/marketplace/actions/build-and-push-docker-images)
 
 
 ## Caching
